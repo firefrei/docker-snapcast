@@ -36,8 +36,7 @@ RUN apk add nginx --update --no-cache
 COPY nginx.conf/default.conf /etc/nginx/http.d/default.conf
 
 # Cleanup
-RUN apk del --purge git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev cargo \
-  && apk cache clean
+RUN apk del --purge git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev cargo
 RUN rm -rf \
   /etc/ssl \
   /var/cache/apk/* \
