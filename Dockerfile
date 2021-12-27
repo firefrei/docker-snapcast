@@ -28,9 +28,9 @@ RUN apk add dbus alsa-lib libdaemon popt libressl soxr avahi libconfig --update 
 RUN apk add snapcast --update --upgrade --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # Install librespot (Spotify Client)
-RUN apk add libconfig-dev cargo --update --no-cache \
+RUN apk add libconfig-dev alsa-lib-dev cargo --update --no-cache \
   && cargo install librespot \
-  && apk del --purge libconfig-dev cargo
+  && apk del --purge libconfig-dev alsa-lib-dev cargo
 
 # Install NGINX for SSL reverse proxy to webinterface
 RUN mkdir /run/nginx/ \
