@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  snapserver:
+    image: 'firefrei/snapcast'
+    restart: unless-stopped'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config_snapcast/:/root/.config/snapserver/
+
+      # Optional: NGINX
+      - ./config_nginx/:/etc/nginx/http.d/
+      - ./certs/:/usr/certs/
