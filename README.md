@@ -1,10 +1,10 @@
-# Snapcast container image for Docker 
-### In a nutshell
+# Snapcast Container Image
+### In a Nutshell
 [Snapcast](https://github.com/badaix/snapcast) multi-room-audio-streaming with AirPlay, Spotify and HTTPS support enabled. Based on Alpine Linux.
 
-### Long version
+### Long Version
 This docker image serves a [Snapcast server](https://github.com/badaix/snapcast) together with AirPlay (via [shairport-sync](https://github.com/mikebrady/shairport-sync)) and Spotify (via [librespot](https://github.com/librespot-org/librespot)).
-Snapcast is loaded from the edge branch of alpines repositories while shairport-sync and librespot are built manually with recommended options by Snapcast.  
+Snapcast is loaded from the edge branch of Alpines APK repositories while `shairport-sync` and `librespot` are built manually with recommended options by Snapcast.  
 Additionally, NGINX is installed in the image to provide a HTTPS-secured connection to the Snapweb UI (HTTP-only is directly provided by Snapcast).
 
 
@@ -31,9 +31,11 @@ docker run -it \
 
 Optional volume mounts for NGINX reverse proxy:
 ```bash
-  -v ~/nginx_certs/:/srv/certs/
+  -v '~/nginx_certs/:/srv/certs/'
 ```
 
-### HTTPS-secured connection to Snapweb
-NGINX is configured as a reverse proxy and will listen on port 443. The folder `/srv/certs/` must contain the TLS certificate files: `snapserver.pem` contains the certificate (chain) and `snapserver.key` the private key file.
-
+## Configuration File Paths
+- `/root/.config/snapserver/`  
+  Path to snapcast server configuration. Place your custom `snapserver.conf` file here. Snapserver will also place its run-time configuration (like `server.json`) here.
+- `/srv/certs/`  
+  NGINX is configured as a reverse proxy and will listen on port 443 to serve a HTTPS-secured connection to Snapweb. This folder must contain the TLS certificate files: `snapserver.pem` contains the certificate (chain) and `snapserver.key` the private key file.
