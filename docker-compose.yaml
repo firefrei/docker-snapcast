@@ -4,10 +4,21 @@ services:
   snapserver:
     image: 'firefrei/snapcast'
     restart: unless-stopped'
+    ports:
+      # Snapcast Ports
+      - '1704-1705:1704-1705'
+      - '1780:1780'
+      # AirPlay ports
+      - '3689:3689'
+      - '5000-5005:5000-5005'
+      - '6000-6005:6000-6005/udp'
+      # Avahi ports
+      - '5353:5353'
+      # NGINX ports
+      - '443:443'
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config_snapcast/:/root/.config/snapserver/
 
-      # Optional: NGINX
-      - ./config_nginx/:/etc/nginx/http.d/
-      - ./certs/:/usr/certs/
+      # Optional: HTTPS certificates for NGINX
+      - ./nginx_certs/:/srv/certs/
