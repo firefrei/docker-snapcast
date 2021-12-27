@@ -3,7 +3,7 @@ FROM alpine:latest
 # Note: Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
 #   APK way: `RUN apk add shairport-sync --update --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing`
 RUN apk add git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev --update --no-cache \
-  %% cd /root \
+  && cd /root \
   && git clone https://github.com/mikebrady/shairport-sync.git shairport-sync \
   && cd shairport-sync \
   && autoreconf -i -f \
