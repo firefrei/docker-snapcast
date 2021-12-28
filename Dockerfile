@@ -36,7 +36,7 @@ RUN apk add --no-cache libconfig-dev alsa-lib-dev cargo \
 
 # Install NGINX for SSL reverse proxy to webinterface
 RUN mkdir -p /run/nginx/ /srv/certs/ \
-  && apk add --no-cache nginx
+  && apk add --no-cache nginx openssl
 COPY nginx.conf/default.conf /etc/nginx/http.d/default.conf
 VOLUME /srv/certs
 
