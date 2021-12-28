@@ -1,5 +1,11 @@
 FROM alpine:latest
 
+# Add edge and testing as tagged repositories to APK (will only be used when tag is explicitly named)
+RUN echo -e "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main\n@edgecommunity http://dl-cdn.alpinelinux.org/alpine/edge/community\n@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+
+# Install shairport-sync Runtime dependencies
+RUN apk add --no-cache dbus alsa-lib libdaemon popt libressl soxr avahi libconfig 
+
 # Note: Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
 #   APK way: `RUN apk add shairport-sync --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing`
 RUN apk add --no-cache git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev \
@@ -21,13 +27,11 @@ RUN apk add --no-cache git build-base autoconf automake libtool alsa-lib-dev lib
   && cd / \
   && apk del --purge git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev
 
-# Install Shairport Runtime dependencies
-RUN apk add --no-cache dbus alsa-lib libdaemon popt libressl soxr avahi libconfig 
 
 # Install snapcast
 # Note: Do not install snapcast-server (does not include webdir, ...), install snapcast instead
-# FixMe: Added libstdc++ to meet newest snapcast dependencies. Can be removed, if main libstdc++ is updated (2021-12-28)
-RUN apk add --upgrade --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libstdc++ snapcast
+# FixMe: Added libstdc++ from edge to meet newest snapcast dependencies. Can be removed, if main libstdc++ is updated (10.3.1_git20211027-r0 -> 11.2.1_git20211128-r3) [2021-12-28]
+RUN apk add --no-cache libstdc++@edge snapcast@edgecommunity
 
 # Install librespot (Spotify Client)
 RUN apk add --no-cache libconfig-dev alsa-lib-dev cargo \
