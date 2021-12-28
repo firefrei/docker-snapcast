@@ -25,7 +25,8 @@ RUN apk add dbus alsa-lib libdaemon popt libressl soxr avahi libconfig --update 
 
 # Install snapcast
 # Note: Do not install snapcast-server (does not include webdir, ...), install snapcast instead
-RUN apk add snapcast --update --upgrade --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community
+# FixMe: Added libstdc++ to meet newest snapcast dependencies. Can be removed, if main libstdc++ is updated (2021-12-28)
+RUN apk add libstdc++ snapcast --update --upgrade --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # Install librespot (Spotify Client)
 RUN apk add libconfig-dev alsa-lib-dev cargo --update --no-cache \
