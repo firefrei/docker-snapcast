@@ -1,6 +1,7 @@
 # Snapcast Container Image
 
 Source on GitHub: [https://github.com/firefrei/docker-snapcast](https://github.com/firefrei/docker-snapcast)  
+Image on Docker Hub: [https://hub.docker.com/r/firefrei/snapcast](https://hub.docker.com/r/firefrei/snapcast)  
 
 ### In a Nutshell
 [Snapcast](https://github.com/badaix/snapcast) multi-room-audio-streaming with AirPlay, Spotify and HTTPS support enabled. Based on Alpine Linux.
