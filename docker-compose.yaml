@@ -2,8 +2,8 @@ version: '3'
 
 services:
   snapserver:
-    image: 'firefrei/snapcast'
-    restart: unless-stopped'
+    image: 'firefrei/snapcast:latest'
+    restart: 'unless-stopped'
     ports:
       # Snapcast Ports
       - '1704-1705:1704-1705'
@@ -21,4 +21,4 @@ services:
       - ./config_snapcast/:/root/.config/snapserver/
 
       # Optional: HTTPS certificates for NGINX
-      - ./nginx_certs/:/srv/certs/
+      #- ./nginx_certs/:/srv/certs/
