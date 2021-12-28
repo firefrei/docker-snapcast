@@ -1,7 +1,8 @@
 FROM alpine:latest
 
 # Add edge and testing as tagged repositories to APK (will only be used when tag is explicitly named)
-RUN echo -e "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main\n@edgecommunity http://dl-cdn.alpinelinux.org/alpine/edge/community\n@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN echo -e "@edge https://dl-cdn.alpinelinux.org/alpine/edge/main\n@edgecommunity https://dl-cdn.alpinelinux.org/alpine/edge/community\n@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+  && apk update
 
 # Install shairport-sync Runtime dependencies
 RUN apk add --no-cache dbus alsa-lib libdaemon popt libressl soxr avahi libconfig 
