@@ -15,7 +15,7 @@ if [ -s /srv/certs/snapserver.pem ] || [ -s /srv/certs/snapserver.key ] || [ -n 
 else
     echo "Generating self-signed certificates for NGINX."
     openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-        -keyout /srv/certs/snapserver.pem -out /srv/certs/snapserver.key \
+        -keyout /srv/certs/snapserver.key -out /srv/certs/snapserver.pem \
         -subj "/C=DE/ST=Bavaria/L=Nuremberg/O=Snapserver/CN=snapserver"
 fi
 
