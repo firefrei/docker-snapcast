@@ -10,7 +10,7 @@ dbus-daemon --system
 avahi-daemon  --daemonize --no-chroot
 
 # NGINX: generate self-signed ssl certificates, if no certs are existant
-if [ -s /srv/certs/snapserver.pem ] || [ -s /srv/certs/snapserver.key ] || [ -n "${SKIP_SSL_GENERATE}" ]; then
+if [ -s /srv/certs/snapserver.pem ] || [ -s /srv/certs/snapserver.key ] || [ -n "${SKIP_CERTS_GENERATE}" ]; then
     echo "Server SSL certificates for NGINX already exist, skipping generation."
 else
     echo "Generating self-signed certificates for NGINX."
