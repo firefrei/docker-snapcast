@@ -47,7 +47,8 @@ VOLUME /srv/certs
 
 # Cleanup
 RUN rm -rf \
-  /srv/build
+  /srv/build \
+  /var/cache/apk/*
 
 # Copy startup script
 COPY start.sh /start.sh
