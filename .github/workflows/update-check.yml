@@ -36,10 +36,14 @@ jobs:
         with:
           tag_name: latest
           release_name: v${{ steps.apk_version.outputs.result }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: "Delete old releases"
         if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
         uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
