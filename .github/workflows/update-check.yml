@@ -31,7 +31,7 @@ jobs:
           latest: true
       
       - name: "Delete version releases tagged with latest"
-        if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
+        if: steps.latest_release_version.outputs.name.replace(/v/, "").localeCompare(steps.apk_version.outputs.result) !== 0
         uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 0
@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: "Create new tag and release"
-        if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
+        if: steps.latest_release_version.outputs.name.replace(/v/, "").localeCompare(steps.apk_version.outputs.result) !== 0
         uses: avakar/tag-and-release@v1
         with:
           tag_name: latest
