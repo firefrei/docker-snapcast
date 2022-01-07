@@ -78,3 +78,7 @@ jobs:
     needs: [check, update]
     if: ${{ fromJSON(needs.check.outputs.update_info).is_avail }}
     uses: firefrei/docker-snapcast/.github/workflows/docker-image.yml@main
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
