@@ -49,16 +49,16 @@ jobs:
             console.log("New version available? " + result_json.is_avail + ".");
             console.log(result_json);
             return result_json
-  
+
   update:
     needs: check
     runs-on: ubuntu-latest
     steps:
       - name: "Echo update info"
-        run: echo ${{ needs.check.outputs.update_info.is_avail }}
+        run: echo ${{ fromJSON(needs.check.outputs.update_info) }}
         
       - name: "Delete version releases tagged with latest"
-        if: ${{ needs.check.outputs.update_info.is_avail }}
+        if: fromJSON(needs.check.outputs.update_info).is_avail
         uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 0
@@ -68,19 +68,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: "Create new tag and release"
-        if: ${{ needs.check.outputs.update_info.is_avail}}
+        if: fromJSON(needs.check.outputs.update_info).is_avail
         uses: avakar/tag-and-release@v1
         with:
           tag_name: latest
-          release_name: v${{ needs.check.outputs.update_info.new_version }}
+          release_name: v${{ fromJSON(needs.check.outputs.update_info).new_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   call-workflow-docker-image:
     needs: [check, update]
-    if: ${{ needs.check.outputs.update_info.is_avail }}
+    if: ${{ fromJSON(needs.check.outputs.update_info).is_avail }}
     uses: firefrei/docker-snapcast/.github/workflows/docker-image.yml@main
-    
-     
-
