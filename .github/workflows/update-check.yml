@@ -35,15 +35,15 @@ jobs:
       - uses: actions/github-script@v5
         id: update_available
         env:
-          REPO_VERSION: ${{ steps.latest_release_version.outputs.name.replace(/v/, "") }}
+          REPO_VERSION: ${{ steps.latest_release_version.outputs.name }}
           APK_VERSION: ${{ steps.apk_version.outputs.result }} 
         with:
           script: |
             const { REPO_VERSION, APK_VERSION } = process.env;
-            const is_avail = (REPO_VERSION.localeCompare(APK_VERSION) !== 0);
+            const is_avail = (REPO_VERSION.replace(/v/, "").localeCompare(APK_VERSION) !== 0);
             return {
               "is_avail": is_avail,
-              "cur_version": REPO_VERSION,
+              "cur_version": REPO_VERSION.replace(/v/, ""),
               "new_version": APK_VERSION
               };
   
