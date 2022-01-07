@@ -6,8 +6,17 @@ on:
   push:
     tags:
       - '*'
+  # Make workflow callable manually (e.g. via UI)
   workflow_dispatch:
+  # Make workflow callable from other workflows:
   workflow_call:
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_ACCESS_TOKEN:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 
 jobs:
   build_and_push:
