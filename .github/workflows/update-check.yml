@@ -58,7 +58,7 @@ jobs:
         run: echo ${{ needs.check.outputs.update_info }}
         
       - name: "Delete version releases tagged with latest"
-        if: ${{ needs.check.outputs.update_info.is_avail }}
+        if: ${{ Boolean(needs.check.outputs.update_info.is_avail) }}
         uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 0
@@ -68,7 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: "Create new tag and release"
-        if: ${{ needs.check.outputs.update_info.is_avail }}
+        if: ${{ Boolean(needs.check.outputs.update_info.is_avail) }}
         uses: avakar/tag-and-release@v1
         with:
           tag_name: latest
@@ -79,7 +79,7 @@ jobs:
 
   call-workflow-docker-image:
     needs: [check, update]
-    if: ${{ needs.check.outputs.update_info.is_avail }}
+    if: ${{ Boolean(needs.check.outputs.update_info.is_avail) }}
     uses: firefrei/docker-snapcast/.github/workflows/docker-image.yml@main
     
      
