@@ -41,11 +41,14 @@ jobs:
           script: |
             const { REPO_VERSION, APK_VERSION } = process.env;
             const is_avail = (REPO_VERSION.replace(/v/, "").localeCompare(APK_VERSION) !== 0);
-            return {
+            const result_json = {
               "is_avail": is_avail,
               "cur_version": REPO_VERSION.replace(/v/, ""),
               "new_version": APK_VERSION
               };
+            console.log("New version available? " + result_json.is_avail + ".");
+            console.log(result_json);
+            return result_json
   
   update:
     needs: check
