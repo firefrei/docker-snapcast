@@ -54,9 +54,6 @@ jobs:
     needs: check
     runs-on: ubuntu-latest
     steps:
-      - name: "Echo update info"
-        run: echo ${{ fromJSON(needs.check.outputs.update_info) }}
-        
       - name: "Delete version releases tagged with latest"
         if: fromJSON(needs.check.outputs.update_info).is_avail
         uses: dev-drprasad/delete-older-releases@v0.2.0
