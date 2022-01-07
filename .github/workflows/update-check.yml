@@ -30,6 +30,16 @@ jobs:
           token: ${{ github.token }}
           latest: true
       
+      - name: "Delete all version releases"
+        if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
+        uses: dev-drprasad/delete-older-releases@v0.2.0
+        with:
+          keep_latest: 0
+          delete_tags: true
+          delete_tag_pattern: "v"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: "Create new tag and release"
         if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
         uses: avakar/tag-and-release@v1
@@ -39,11 +49,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: "Delete old releases"
-        if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
-        uses: dev-drprasad/delete-older-releases@v0.2.0
-        with:
-          keep_latest: 1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     
 
