@@ -1,0 +1,44 @@
+name: "Check for new versions and update latest release and tag."
+
+on:
+  schedule:
+    - cron: '30 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        id: apk_version
+        with:
+          result-encoding: string
+          script: |
+            const apk_url = "https://git.alpinelinux.org/aports/plain/community/snapcast/APKBUILD"
+            const result = await github.request(apk_url)
+            const re = /pkgver\=\d+(\.\d+)+/i;
+            const found = result.data.match(re);
+            
+            const apk_version = found[0].replace(/pkgver\=/g, "");
+            console.log("Newest version available in APK repository is: " + apk_version);
+            return apk_version;
+            
+      - name: Get latest version from this repository
+        id: latest_release_version
+        uses: kaliber5/action-get-release@v1
+        with:
+          latest: true
+      
+      - name: "Create new tag and release"
+        if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
+        uses: avakar/tag-and-release@v1
+        with:
+          tag_name: latest
+          release_name: v${{ steps.apk_version.outputs.result }}
+          
+      - name: "Delete old releases"
+        if: ("${{ steps.apk_version.outputs.result }}" !== "v${{ steps.latest_release_version.outputs.name }}")
+        uses: dev-drprasad/delete-older-releases@v0.2.0
+        with:
+          keep_latest: 1
+
