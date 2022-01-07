@@ -8,6 +8,8 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      update_info: ${{ steps.update_available.outputs.result }}
     steps:
       - uses: actions/github-script@v5
         id: apk_version
@@ -30,8 +32,23 @@ jobs:
           token: ${{ github.token }}
           latest: true
       
+      - uses: actions/github-script@v5
+        id: update_available
+        with:
+          script: |
+            const is_avail = (steps.latest_release_version.outputs.name.replace(/v/, "").localeCompare(steps.apk_version.outputs.result) !== 0);
+            return {
+              "is_avail": is_avail,
+              "cur_version": steps.latest_release_version.outputs.name.replace(/v/, ""),
+              "new_version": steps.apk_version.outputs.result
+              };
+  
+  update:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
       - name: "Delete version releases tagged with latest"
-        if: steps.latest_release_version.outputs.name.replace(/v/, "").localeCompare(steps.apk_version.outputs.result) !== 0
+        if: needs.check.outputs.update_info.is_avail === true
         uses: dev-drprasad/delete-older-releases@v0.2.0
         with:
           keep_latest: 0
@@ -41,13 +58,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: "Create new tag and release"
-        if: steps.latest_release_version.outputs.name.replace(/v/, "").localeCompare(steps.apk_version.outputs.result) !== 0
+        if: needs.check.outputs.update_info.is_avail === true
         uses: avakar/tag-and-release@v1
         with:
           tag_name: latest
-          release_name: v${{ steps.apk_version.outputs.result }}
+          release_name: v${{ needs.check.outputs.update_info.new_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
+
+  call-workflow-docker-image:
+    needs: [check, update]
+    if: needs.check.outputs.update_info.is_avail === true
+    uses: firefrei/docker-snapcast/.github/workflows/docker-image.yml@main
+    
      
 
