@@ -50,8 +50,9 @@ VOLUME /app/certs
 
 
 # Copy startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+WORKDIR /app
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # Expose Ports
 ## Snapcast Ports: 1704-1705 1780
@@ -62,4 +63,4 @@ EXPOSE 1704-1705 1780 3689 5000-5005 6000-6005/udp 5353 443
 
 # Run start script
 ENV PATH "/root/.cargo/bin:$PATH"
-CMD ["./start.sh"]
+CMD ["/app/start.sh"]
