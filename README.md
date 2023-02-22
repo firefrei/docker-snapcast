@@ -35,11 +35,11 @@ docker run -it \
 
 Optional volume mounts for NGINX reverse proxy:
 ```bash
-  -v '~/nginx_certs/:/srv/certs/'
+  -v '~/nginx_certs/:/app/certs/'
 ```
 
 ## Configuration File Paths
 - `/root/.config/snapserver/`  
   Path to snapcast server configuration. Place your custom `snapserver.conf` file here. Snapserver will also place its run-time configuration (like `server.json`) here.
-- `/srv/certs/`  
+- `/app/certs/`  
   NGINX is configured as a reverse proxy and will listen on port 443 to serve a HTTPS-secured connection to Snapweb. This folder must contain the TLS certificate files: `snapserver.pem` contains the certificate (chain) and `snapserver.key` the private key file.
