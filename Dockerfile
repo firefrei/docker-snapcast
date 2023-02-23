@@ -72,5 +72,5 @@ RUN chmod +x /app/start.sh
 EXPOSE 1704-1705 1780 3689 5000-5005 6000-6005/udp 5353 443
 
 # Run start script
-ENV PATH "/root/.cargo/bin:$PATH"
-CMD ["/app/start.sh"]
+ENTRYPOINT [ "/bin/sh", "-c" ]
+CMD [ "/app/start.sh" ]
