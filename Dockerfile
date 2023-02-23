@@ -34,14 +34,13 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
         --with-metadata \
   && make \
   && make install \
-  && apk del --purge .build-deps \
   #
   # Build and Install librespot (Spotify Client)
   # - Disable all audio out plugins, as they are not needed.
   && cd /app/build \
-  && git clone https://github.com/librespot-org/librespot librespot \
+  && git clone https://github.com/librespot-org/librespot librespot.git \
   && cd librespot.git \
-  && apk add --no-cache --upgrade --virtual .build-deps-librespot libconfig-dev cargo build-essential \
+  && apk add --no-cache --upgrade --virtual .build-deps-librespot libconfig-dev cargo build-base \
   && cargo build --release --no-default-features \
   && cp ./target/release/librespot /usr/sbin/ \
   && chmod +x /usr/sbin/librespot \
