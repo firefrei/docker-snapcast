@@ -45,8 +45,9 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   && cp ./target/release/librespot /usr/sbin/ \
   && chmod +x /usr/sbin/librespot \
   # Cleanup
+  && cargo clean \
   && apk del --purge .build-deps-shairport .build-deps-librespot \
-  && rm -rf /app/build \
+  && rm -rf /app/build ~/.cargo \
   #
   # Install NGINX for SSL reverse proxy to webinterface
   && apk add --no-cache --upgrade nginx
