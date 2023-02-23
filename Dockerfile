@@ -18,7 +18,7 @@ FROM snapcast AS snapcast-extended
 RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig \
   #
   # Note: Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
-  && apk add --no-cache --upgrade --virtual .build-deps-shairport git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev \
+  && apk add --no-cache --upgrade --virtual .build-deps-shairport git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev openssl-dev soxr-dev avahi-dev libconfig-dev \
   && mkdir -p /app/build \
   && cd /app/build \
   && git clone https://github.com/mikebrady/shairport-sync.git shairport-sync.git \
