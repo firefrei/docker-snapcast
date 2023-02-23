@@ -10,15 +10,19 @@ ENTRYPOINT [ "/usr/bin/snapserver" ]
 ###
 FROM snapcast AS snapcast-extended
 
-# Install shairport-sync Runtime dependencies
+# Install and build steps
+# - install shairport-sync runtime dependencies
+# - build shairport sync
+# - build librespot
+# - install nginx
 RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig \
   #
   # Note: Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
-  && apk add --no-cache --upgrade --virtual .build-deps git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev \
+  && apk add --no-cache --upgrade --virtual .build-deps-shairport git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev libressl-dev soxr-dev avahi-dev libconfig-dev \
   && mkdir -p /app/build \
   && cd /app/build \
-  && git clone https://github.com/mikebrady/shairport-sync.git shairport-sync \
-  && cd shairport-sync \
+  && git clone https://github.com/mikebrady/shairport-sync.git shairport-sync.git \
+  && cd shairport-sync.git \
   && autoreconf -i -f \
   && ./configure \
         --with-alsa \
@@ -31,12 +35,19 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   && make \
   && make install \
   && apk del --purge .build-deps \
-  && rm -rf /app/build \
   #
-  # Install librespot (Spotify Client)
-  && apk add --no-cache --upgrade --virtual .build-deps libconfig-dev alsa-lib-dev cargo \
-  && cargo install librespot \
-  && apk del --purge .build-deps \
+  # Build and Install librespot (Spotify Client)
+  # - Disable all audio out plugins, as they are not needed.
+  && cd /app/build \
+  && git clone https://github.com/librespot-org/librespot librespot \
+  && cd librespot.git \
+  && apk add --no-cache --upgrade --virtual .build-deps-librespot libconfig-dev cargo build-essential \
+  && cargo build --release --no-default-features \
+  && cp ./target/release/librespot /usr/sbin/ \
+  && chmod +x /usr/sbin/librespot \
+  # Cleanup
+  && apk del --purge .build-deps-shairport .build-deps-librespot \
+  && rm -rf /app/build \
   #
   # Install NGINX for SSL reverse proxy to webinterface
   && apk add --no-cache --upgrade nginx
