@@ -1,8 +1,6 @@
 #!/bin/sh
 
-# Prepare DBUS for avahi
-rm -rf /var/run
-mkdir -p /var/run/dbus
+# Prepare system-wide DBUS for avahi
 dbus-uuidgen --ensure
 dbus-daemon --system
 
