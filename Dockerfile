@@ -81,9 +81,12 @@ ADD --chown=snapcast:snapcast nginx.conf/default.conf /etc/nginx/http.d/default.
 # Copy startup script
 WORKDIR /app
 ADD --chown=snapcast:snapcast start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+ADD --chown=snapcast:snapcast healthcheck.sh /app/healthcheck.sh
+RUN chmod +x /app/start.sh /app/healthcheck.sh
 
 VOLUME [ "/app/certs", "/app/config" ]
+
+HEALTHCHECK CMD [ "/bin/sh", "/app/healthcheck.sh" ]
 
 # Expose Ports
 ## Snapcast Ports: 1704-1705 1780
