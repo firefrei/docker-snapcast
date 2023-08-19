@@ -14,7 +14,6 @@ ENTRYPOINT [ "/usr/bin/snapserver" ]
 ###
 FROM snapcast AS snapcast-extended
 
-ENV NGINX_ENABLED "1"
 ENV NGINX_SKIP_CERT_GENERATION "0"
 ENV NGINX_HTTPS_PORT "443"
 

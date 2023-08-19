@@ -26,9 +26,7 @@ if [ "${AIRPLAY_NOT_ENABLED}" -eq 0 ]; then
 fi
 
 # Check nginx
-if [ "${NGINX_ENABLED}" -eq 1 ]; then
-    RES=$(pgrep -n nginx || exit 5)
-    echo "nginx is running..."
-fi
+RES=$(pgrep -n nginx || exit 5)
+echo "nginx is running..."
 
 exit 0
