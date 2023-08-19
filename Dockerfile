@@ -24,10 +24,10 @@ ENV NGINX_HTTPS_PORT "443"
 # - build librespot
 # - install nginx
 RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig curl \
+  && mkdir -p /app/build /app/config /app/data \
   #
   # Note: Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
   && apk add --no-cache --upgrade --virtual .build-deps-shairport git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev openssl-dev soxr-dev avahi-dev libconfig-dev \
-  && mkdir -p /app/build \
   && cd /app/build \
   && git clone https://github.com/mikebrady/shairport-sync.git shairport-sync.git \
   && cd shairport-sync.git \
@@ -60,6 +60,7 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   && cargo build --release --no-default-features \
   && cp ./target/release/librespot /usr/sbin/ \
   && chmod +x /usr/sbin/librespot \
+  #
   # Cleanup
   && cargo clean \
   && apk del --purge .build-deps-shairport .build-deps-librespot \
@@ -67,29 +68,27 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   #
   # Install NGINX for SSL reverse proxy to webinterface
   && apk add --no-cache --upgrade nginx \
+  && mkdir -p /run/nginx/ /app/certs/ \
   && chown -R snapcast:snapcast /var/lib/nginx /var/log /usr/lib/nginx /run/nginx \
-  # Configure app directory permissions
-  && mkdir -p /app/config /app/data \
-  && chown -R snapcast:snapcast /app \
+  #
   # Create default configuration for snapserver
   && cp /etc/snapserver.conf /app/config/snapserver.conf \
   && sed -i '/datadir =/c\datadir = /app/data/' /app/config/snapserver.conf \
-  && sed -i '/^#source =.*/a source = airplay:///shairport-sync?name=Snapcast&port=5000' /app/config/snapserver.conf
+  && sed -i '/^#source =.*/a source = airplay:///shairport-sync?name=Snapcast&port=5000' /app/config/snapserver.conf \
+  #
+  # Configure app directory owner
+  && chown -R snapcast:snapcast /app
 
-
-USER snapcast:snapcast
-
-# Install NGINX for SSL reverse proxy to webinterface
-RUN mkdir -p /run/nginx/ /app/certs/
+# Add NGINX configuration
 ADD --chown=snapcast:snapcast config/nginx/default.conf /etc/nginx/http.d/default.conf
 
-# Copy startup script
-WORKDIR /app
-ADD --chown=snapcast:snapcast start.sh /app/start.sh
-ADD --chown=snapcast:snapcast healthcheck.sh /app/healthcheck.sh
-RUN chmod +x /app/start.sh /app/healthcheck.sh
+# Copy run and healtcheck script
+ADD --chown=snapcast:snapcast --chmod=0775 start.sh /app/start.sh
+ADD --chown=snapcast:snapcast --chmod=0775 healthcheck.sh /app/healthcheck.sh
 
-VOLUME [ "/app/certs", "/app/config", "/app/data" ]
+USER snapcast:snapcast
+WORKDIR /app
+VOLUME [ "/app/config", "/app/data", "/app/certs" ]
 
 HEALTHCHECK CMD [ "/bin/sh", "/app/healthcheck.sh" ]
 
