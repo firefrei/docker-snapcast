@@ -23,11 +23,11 @@ ENV NGINX_HTTPS_PORT "443"
 # - build shairport sync
 # - build librespot
 # - install nginx
-RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig curl \
+RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig glib curl \
   && mkdir -p /app/build /app/config /app/data \
   #
-  # Note: Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
-  && apk add --no-cache --upgrade --virtual .build-deps-shairport git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev openssl-dev soxr-dev avahi-dev libconfig-dev \
+  # Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
+  && apk add --no-cache --upgrade --virtual .build-deps-shairport git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev openssl-dev soxr-dev avahi-dev libconfig-dev glib-dev \
   && cd /app/build \
   && git clone https://github.com/mikebrady/shairport-sync.git shairport-sync.git \
   && cd shairport-sync.git \
@@ -36,6 +36,7 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
         --with-alsa \
         --with-pipe \
         --with-stdout \
+        --with-dbus-interface \
         --with-avahi \
         --with-ssl=openssl \
         --with-soxr \
@@ -45,13 +46,16 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   #
   # Configure avahi daemon for rootless execution
   # Ref: https://gnaneshkunal.github.io/avahi-docker-non-root.html
-  && sed -i '/enable-dbus=/c\enable-dbus=no' /etc/avahi/avahi-daemon.conf \
+  #&& sed -i '/enable-dbus=/c\enable-dbus=no' /etc/avahi/avahi-daemon.conf \
+  && echo "<busconfig><listen>unix:path=/var/run/dbus/system_bus_socket</listen></busconfig>" > /usr/share/dbus-1/session.d/custom.conf \
+  && mkdir -p /var/run/dbus \
+  && chmod 777 /var/run/dbus/ \
   && chmod 777 /etc/avahi/avahi-daemon.conf \
   && mkdir -p /var/run/avahi-daemon \
   && chown avahi:avahi /var/run/avahi-daemon \
   && chmod 777 /var/run/avahi-daemon \
   #
-  # Build and Install librespot (Spotify Client)
+  # Build and install librespot (Spotify Client)
   # - Disable all audio out plugins, as they are not needed.
   && cd /app/build \
   && git clone https://github.com/librespot-org/librespot librespot.git \

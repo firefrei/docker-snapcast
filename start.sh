@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+# Start dbus daemon in background
+dbus-uuidgen --ensure
+dbus-daemon --session --fork
+
 # Start avahi
 avahi-daemon --daemonize --no-drop-root
 

@@ -20,11 +20,14 @@ if [ "${AIRPLAY_NOT_ENABLED}" -eq 0 ]; then
 
     RES=$(pgrep -n avahi-daemon || exit 3)
     echo "avahi-daemon is running..."
+
+    RES=$(pgrep -n dbus-daemon || exit 4)
+    echo "dbus-daemon is running..."
 fi
 
 # Check nginx
 if [ "${NGINX_ENABLED}" -eq 1 ]; then
-    RES=$(pgrep -n nginx || exit 4)
+    RES=$(pgrep -n nginx || exit 5)
     echo "nginx is running..."
 fi
 
