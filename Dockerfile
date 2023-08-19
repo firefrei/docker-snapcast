@@ -23,7 +23,7 @@ ENV NGINX_HTTPS_PORT "443"
 # - build shairport sync
 # - build librespot
 # - install nginx
-RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig glib curl \
+RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig glib supervisor curl \
   && mkdir -p /app/build /app/config /app/data \
   #
   # Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
@@ -81,11 +81,14 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   # Configure app directory owner
   && chown -R snapcast:snapcast /app
 
+# Add supervisord configuration
+ADD --chown=snapcast:snapcast config/supervisord/supervisord.ini /app/supervisor.d/snapcast.ini
+
 # Add NGINX configuration
 ADD --chown=snapcast:snapcast config/nginx/default.conf /etc/nginx/http.d/default.conf
 
-# Copy run and healtcheck script
-ADD --chown=snapcast:snapcast --chmod=0775 run.sh /app/run.sh
+# Copy setup and healtcheck script
+ADD --chown=snapcast:snapcast --chmod=0775 setup.sh /app/setup.sh
 ADD --chown=snapcast:snapcast --chmod=0775 healthcheck.sh /app/healthcheck.sh
 
 USER snapcast:snapcast
@@ -103,4 +106,4 @@ EXPOSE 1704-1705 1780 3689 5000-5005 6000-6005/udp 5353 "${NGINX_HTTPS_PORT}"
 
 # Run start script
 ENTRYPOINT [ "/bin/sh", "-c" ]
-CMD [ "/app/run.sh" ]
+CMD [ "/app/setup.sh && /usr/bin/supervisord -c /app/supervisor.d/snapcast.ini" ]

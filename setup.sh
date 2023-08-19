@@ -1,13 +1,10 @@
 #!/bin/sh
 set -e
 
-# Start dbus daemon in background
+# Prepare dbus environment
 dbus-uuidgen --ensure
-dbus-daemon --session --fork
 
-# Start avahi
-avahi-daemon --daemonize --no-drop-root
-
+# Prepare NGINX configuration
 if [ "${NGINX_ENABLED}" -eq 1 ]; then
 
     # NGINX: generate self-signed ssl certificates, if no certs are existant
@@ -25,10 +22,6 @@ if [ "${NGINX_ENABLED}" -eq 1 ]; then
     sed "s/443/${NGINX_HTTPS_PORT}/g" /etc/nginx/http.d/default.conf > /tmp/default.conf
     cat /tmp/default.conf > /etc/nginx/http.d/default.conf
     rm /tmp/default.conf
-
-    # NGINX: Start webserver
-    nginx
 fi
 
-# Start snapserver (will start shairpot-sync automatically)
-snapserver -c /app/config/snapserver.conf --server.datadir=/app/data
+exit 0
