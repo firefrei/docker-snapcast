@@ -44,9 +44,8 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   && make \
   && make install \
   #
-  # Configure avahi daemon for rootless execution
+  # Configure dbus-daemon and avahi-daemon for rootless execution
   # Ref: https://gnaneshkunal.github.io/avahi-docker-non-root.html
-  #&& sed -i '/enable-dbus=/c\enable-dbus=no' /etc/avahi/avahi-daemon.conf \
   && echo "<busconfig><listen>unix:path=/var/run/dbus/system_bus_socket</listen></busconfig>" > /usr/share/dbus-1/session.d/custom.conf \
   && mkdir -p /var/run/dbus \
   && chmod 777 /var/run/dbus/ \
@@ -77,7 +76,6 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   #
   # Create default configuration for snapserver
   && cp /etc/snapserver.conf /app/config/snapserver.conf \
-  && sed -i '/datadir =/c\datadir = /app/data/' /app/config/snapserver.conf \
   && sed -i '/^#source =.*/a source = airplay:///shairport-sync?name=Snapcast&port=5000' /app/config/snapserver.conf \
   #
   # Configure app directory owner

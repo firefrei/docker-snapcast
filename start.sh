@@ -31,4 +31,4 @@ if [ "${NGINX_ENABLED}" -eq 1 ]; then
 fi
 
 # Start snapserver (will start shairpot-sync automatically)
-snapserver -c /app/config/snapserver.conf
+snapserver -c /app/config/snapserver.conf --server.datadir=/app/data
