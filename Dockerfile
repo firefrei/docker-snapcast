@@ -85,7 +85,7 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
 ADD --chown=snapcast:snapcast config/nginx/default.conf /etc/nginx/http.d/default.conf
 
 # Copy run and healtcheck script
-ADD --chown=snapcast:snapcast --chmod=0775 start.sh /app/start.sh
+ADD --chown=snapcast:snapcast --chmod=0775 run.sh /app/run.sh
 ADD --chown=snapcast:snapcast --chmod=0775 healthcheck.sh /app/healthcheck.sh
 
 USER snapcast:snapcast
@@ -103,4 +103,4 @@ EXPOSE 1704-1705 1780 3689 5000-5005 6000-6005/udp 5353 "${NGINX_HTTPS_PORT}"
 
 # Run start script
 ENTRYPOINT [ "/bin/sh", "-c" ]
-CMD [ "/app/start.sh" ]
+CMD [ "/app/run.sh" ]
