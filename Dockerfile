@@ -69,14 +69,19 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   && apk add --no-cache --upgrade nginx \
   && chown -R snapcast:snapcast /var/lib/nginx /var/log /usr/lib/nginx /run/nginx \
   # Configure app directory permissions
-  && mkdir -p /app/config \
-  && chown -R snapcast:snapcast /app
+  && mkdir -p /app/config /app/data \
+  && chown -R snapcast:snapcast /app \
+  # Create default configuration for snapserver
+  && cp /etc/snapserver.conf /app/config/snapserver.conf \
+  && sed -i '/datadir =/c\datadir = /app/data/' /app/config/snapserver.conf \
+  && sed -i '/^#source =.*/a source = airplay:///shairport-sync?name=Snapcast&port=5000' /app/config/snapserver.conf
+
 
 USER snapcast:snapcast
 
 # Install NGINX for SSL reverse proxy to webinterface
 RUN mkdir -p /run/nginx/ /app/certs/
-ADD --chown=snapcast:snapcast nginx.conf/default.conf /etc/nginx/http.d/default.conf
+ADD --chown=snapcast:snapcast config/nginx/default.conf /etc/nginx/http.d/default.conf
 
 # Copy startup script
 WORKDIR /app
@@ -84,7 +89,7 @@ ADD --chown=snapcast:snapcast start.sh /app/start.sh
 ADD --chown=snapcast:snapcast healthcheck.sh /app/healthcheck.sh
 RUN chmod +x /app/start.sh /app/healthcheck.sh
 
-VOLUME [ "/app/certs", "/app/config" ]
+VOLUME [ "/app/certs", "/app/config", "/app/data" ]
 
 HEALTHCHECK CMD [ "/bin/sh", "/app/healthcheck.sh" ]
 
