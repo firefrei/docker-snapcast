@@ -17,7 +17,7 @@ ENTRYPOINT [ "/usr/bin/snapserver" ]
 # - build shairport sync
 FROM snapcast AS snapcast-airport
 ARG AIRPLAY_VERSION
-ENV BUILD_AIRPLAY_VERSION "${AIRPLAY_VERSION:=1}"
+ENV BUILD_AIRPLAY_VERSION "${AIRPLAY_VERSION:-1}"
 
 RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig glib \
   && apk add --no-cache --upgrade --virtual .build-deps git build-base autoconf automake libtool alsa-lib-dev libdaemon-dev popt-dev openssl-dev soxr-dev avahi-dev libconfig-dev glib-dev \
