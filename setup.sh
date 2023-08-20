@@ -18,7 +18,7 @@ if [ "${SPOTIFY_CONFIG_ENABLED}" -eq 1 ]; then
     if [ -z "${SPOTIFY_USERNAME}" ] || [ -z "${SPOTIFY_PASSWORD}" ]; then
         echo "Error: Cannot create spotify configuration! Username and/or password are not set!"
     else
-        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&username=${SPOTIFY_USERNAME}&password=${SPOTIFY_PASSWORD}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}\n" /tmp/snapserver.conf
+        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&username=${SPOTIFY_USERNAME}&password=${SPOTIFY_PASSWORD}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}\n"
     fi
 fi
 
