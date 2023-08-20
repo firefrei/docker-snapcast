@@ -14,8 +14,24 @@ ENTRYPOINT [ "/usr/bin/snapserver" ]
 ###
 FROM snapcast AS snapcast-extended
 
+ENV PIPE_CONFIG_ENABLED "0"
+ENV PIPE_SOURCE_NAME "Pipe"
+ENV PIPE_PATH "/tmp/snapfifo"
+ENV PIPE_MODE "create"
+
+ENV AIRPLAY_CONFIG_ENABLED "1"
+ENV AIRPLAY_SOURCE_NAME "Airplay"
+
+ENV SPOTIFY_CONFIG_ENABLED "0"
+ENV SPOTIFY_SOURCE_NAME "Spotify"
+ENV SPOTIFY_USERNAME ""
+ENV SPOTIFY_PASSWORD ""
+ENV SPOTIFY_DEVICE_NAME "Snapcast"
+ENV SPOTIFY_BITRATE "320"
+
 ENV NGINX_SKIP_CERT_GENERATION "0"
 ENV NGINX_HTTPS_PORT "443"
+
 
 # Install and build steps
 # - install shairport-sync runtime dependencies
@@ -63,7 +79,7 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   && cp ./target/release/librespot /usr/sbin/ \
   && chmod +x /usr/sbin/librespot \
   #
-  # Cleanup
+  # Cleanup build environment
   && cargo clean \
   && apk del --purge .build-deps-shairport .build-deps-librespot \
   && rm -rf /app/build ~/.cargo \
@@ -71,17 +87,20 @@ RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig
   # Install NGINX for SSL reverse proxy to webinterface
   && apk add --no-cache --upgrade nginx \
   && mkdir -p /run/nginx/ /app/certs/ \
-  && chown -R snapcast:snapcast /var/lib/nginx /var/log /usr/lib/nginx /run/nginx \
+  && chown -R snapcast:snapcast /var/lib/nginx /var/log /usr/lib/nginx /run/nginx /app/certs \
   #
-  # Create default configuration for snapserver
-  && cp /etc/snapserver.conf /app/config/snapserver.conf \
-  && sed -i '/^#source =.*/a source = airplay:///shairport-sync?name=Snapcast&port=5000' /app/config/snapserver.conf \
+  # Create configuration and environment for supervisord
+  && mkdir -p /app/supervisord /run/supervisord \
+  && cp /etc/supervisord.conf /app/supervisord/supervisord.conf \
+  && sed -i 's/^files =.*/files = \/app\/supervisord\/snapcast.ini/g' /app/supervisord/supervisord.conf \
+  && sed -i 's/\/run\/supervisord.sock/\/run\/supervisord\/supervisord.sock/g' /app/supervisord/supervisord.conf \
+  && chown -R snapcast:snapcast /run/supervisord /app/supervisord \
   #
   # Configure app directory owner
   && chown -R snapcast:snapcast /app
 
 # Add supervisord configuration
-ADD --chown=snapcast:snapcast config/supervisord/supervisord.ini /app/supervisor.d/snapcast.ini
+ADD --chown=snapcast:snapcast config/supervisord/supervisord.ini /app/supervisord/snapcast.ini
 
 # Add NGINX configuration
 ADD --chown=snapcast:snapcast config/nginx/default.conf /etc/nginx/http.d/default.conf
@@ -105,4 +124,4 @@ EXPOSE 1704-1705 1780 3689 5000-5005 6000-6005/udp 5353 "${NGINX_HTTPS_PORT}"
 
 # Run start script
 ENTRYPOINT [ "/bin/sh", "-c" ]
-CMD [ "/app/setup.sh && /usr/bin/supervisord -c /app/supervisor.d/snapcast.ini" ]
+CMD [ "/app/setup.sh && /usr/bin/supervisord -c /app/supervisord/supervisord.conf" ]
