@@ -4,9 +4,12 @@ services:
   snapserver:
     image: 'firefrei/snapcast:latest'
     restart: always
+    #cap_add:
+      #- NET_BIND_SERVICE   # Optional: allow container to bind privileged ports (>1024)
     environment:
       # See README.md for all environment options.
       TZ: Etc/UTC
+      NGINX_ENABLED: "1"  # enable NGINX for HTTPS -> requires to bind to port 443 by default
     volumes:
       # Snapcast: Configuration and run-time data
       - snapcast-data:/app/data/
@@ -30,8 +33,14 @@ services:
       - '1780:1780'
       # AirPlay ports
       - '3689:3689'
-      - '5000-5005:5000-5005'
-      - '6000-6005:6000-6005/udp'
+      - '5000:5000'
+      - '6000-6009:6000-6009/udp'
+      # AirPlay-2 ports
+      #- '319-320:319-320/udp'
+      #- '3689:3689'
+      #- '5000:5000'
+      #- '7000:7000'
+      #- '6000-6009:6000-6009/udp'
       # Avahi ports
       - '5353:5353'
       # NGINX ports

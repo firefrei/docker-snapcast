@@ -11,7 +11,7 @@ This docker image serves...
 - [Snapcast](https://github.com/badaix/snapcast) server
 - AirPlay (via [shairport-sync](https://github.com/mikebrady/shairport-sync) with dbus-and avahi-daemon) as snapcast source
 - Spotify (via [librespot](https://github.com/librespot-org/librespot)) as snapcast source
-- NGINX to provide a HTTPS-secured connection to the Snapweb UI (HTTP-only is directly provided by Snapcast)
+- NGINX to provide a HTTPS-secured connection to the Snapweb UI (HTTP-only is directly provided by Snapcast) [optional]
 - Supervisord to manage and observe all processes in the container
 - A root-less container environment based on Alpine Linux
 
@@ -44,6 +44,7 @@ Spotify:
 - `SPOTIFY_BITRATE`: Bitrate to stream from Spotify. Defaults to `320` for high quality.
 
 NGINX:
+- `NGINX_ENABLED`: Set to `1` to enable NGINX reverse proxy for serving HTTPS. Defaults to `0`.
 - `NGINX_SKIP_CERT_GENERATION`: Set to `1` to disable certificate generation on startup (if not existant). Defaults to `0`.
 - `NGINX_HTTPS_PORT`: HTTPS port NGINX will bind to. Defaults to `443`, which will only work if docker can bind this port. If having trouble, try a port number above 1024 or adjust the privileges of the container.
 
@@ -73,11 +74,30 @@ docker run -it \
   -p '1704-1705:1704-1705' \
   -p '1780:1780' \
   -p '3689:3689' \
-  -p '5000-5005:5000-5005' \
-  -p '6000-6005:6000-6005/udp' \
+  -p '5000:5000' \
+  -p '6000-6009:6000-6009/udp' \
   -p '5353:5353' \
   -p '443:443' \
+  [-p '7000:7000'] \
+  [-p '319-320:319-320/udp'] \
   [-v <your-volume-mounts>] \
   [-e <your-environment-variables>] \
   firefrei/snapcast
 ```
+
+### Network Specifics
+Binding ports numbers below 1024 requires root privileges under linux. As the container runs without root privileges, you need to grant the binding, if required:
+- Airplay-2 requires NQPTP, which binds the ports `319/udp` and `320/udp`
+- NGINX is (per default) configured to bind to HTTPS port `443/tcp`. This port can also be changed to another number.
+
+Depending on your system and the security you require, you can allow binding to privileged ports by adding the `NET_BIND_SERVICE` linux capability to the container:
+```bash
+docker run ... --cap-add=NET_BIND_SERVICE ...
+```
+
+If the docker daemon itself is not allowed to bind privileged ports, you may also allow the binding system-wide.
+Grant the privilege for **all** processes(!):
+```bash
+sudo sysctl -w net.ipv4.ip_unprivileged_port_start=0
+```
+Please note that this may affect the security of your complete system.
