@@ -29,7 +29,7 @@ Snapcast is loaded from the edge branch of Alpines APK repositories while `shair
 
 Some services may require to bind privileged port numbers (<1024). Check [Network Tweaks](#network-tweaks) section below.
 
-Please note when using Airplay Classic/1: To broadcast the airplay speaker announcements to all iOS devices, `avahi-daemon` is required and used by shairport-sync. As broadcasts can only work in a layer-2 network domain, the container needs to be attached to the same layer-2 network as the clients (see [docker-compose.yaml](docker-compose.yaml) for an example). As a consequence, in routed layer-3 setups (e.g., Kubernetes), Airplay cannot function out of the box. You may try to workaround this issue by using an MDNS repeater, however, this is not tested and not supported.  
+Please note when using Airplay Classic/1: To broadcast the airplay speaker announcements to all client devices, `avahi-daemon` is required and used by shairport-sync. As broadcasts can only work in a layer-2 network domain, the container needs to be attached to the same layer-2 network as the clients (see [docker-compose.yaml](docker-compose.yaml) for an example). As a consequence, in routed layer-3 setups (e.g., Kubernetes), Airplay cannot function out of the box. You may try to workaround this issue by using an MDNS repeater, however, this is not tested and not supported.  
 
 Please note when using Airplay-2: In addition to the requirements for AirPlay Classic/1, Airplay-2 requires NQPTP which needs to bind privileged ports. Check [Network Tweaks](#network-tweaks) section below.
 
@@ -49,6 +49,7 @@ Pipe:
 AirPlay:
 - `AIRPLAY_CONFIG_ENABLED`: Enable the generation of a Snapcast `source` for AirPlay in the snapserver configuration file on container startup. Set to `0` to disable, defaults to `1`.
 - `AIRPLAY_SOURCE_NAME`: Source name of Airplay in Snapcast. Defaults to `Airplay`.
+- `AIRPLAY_DEVICE_NAME`: Speaker name displayed on client device. Defaults to `Snapcast`.
 - `AIRPLAY_EXTRA_ARGS`: (advanced) Add additional arguments to `source` configuration. Format: `&key=value`.
 
 Spotify:
@@ -63,7 +64,7 @@ Spotify:
 Meta:
 - `META_CONFIG_ENABLED`: Enable the generation of a Snapcast `source` for meta stream mix in the snapserver configuration file on container startup. Set to `1` to enable, defaults to `0`.
 - `META_SOURCE_NAME`: Source name of Spotify in Snapcast. Defaults to `Mix`.
-- `META_SOURCES`: (required) List of sources to include in the mix. Source #1 has the highest priority. Defaults to empty string.
+- `META_SOURCES`: (required) List of sources to include in the mix. Source #1 has the highest priority. Defaults to empty string. Format example: `Airplay/Spotify/Pipe`.
 - `META_EXTRA_ARGS`: (advanced) Add additional arguments to `source` configuration. Format: `&key=value`.
 
 Custom:

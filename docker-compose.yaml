@@ -10,10 +10,11 @@ services:
       # See README.md for all environment options.
       TZ: Etc/UTC
       NGINX_ENABLED: "1"  # enable NGINX for HTTPS -> requires to bind to port 443 by default
+      #NGINX_HTTPS_PORT: "4433"  # use port 4433 instead of 4433
     volumes:
       # Snapcast: Configuration and run-time data
       - snapcast-data:/app/data/
-      - snapcast-config:/app/config/
+      #- snapcast-config:/app/config/
       #- ./config_snapcast/:/app/config/
 
       # NGINX: HTTPS certificates
@@ -22,8 +23,8 @@ services:
 
 
     # Network Alternative 1: Bridge container directly into your home network
-    networks:
-      bridged-home-network:
+    #networks:
+      #bridged-home-network:
         #ipv4_address: <desired-ip-of-container>
 
     # Network Alternative 2: Use port-forwarding of host ports
@@ -48,12 +49,14 @@ services:
 
 
 volumes:
-  snapcast-config:
+  #snapcast-config:
   snapcast-data:
   nginx-certs:
 
 
 # Network Alternative 1
-networks:
-  bridged-home-network:
-    external: true
+# The network `bridged-home-network` must be manually created 
+# with `docker network create ...` and bridged to the home network
+#networks:
+  #bridged-home-network:
+    #external: true
