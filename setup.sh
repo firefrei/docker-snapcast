@@ -26,7 +26,7 @@ fi
 cp /etc/snapserver.conf /tmp/snapserver.conf
 if [ ! -z "${SNAPCAST_CONFIG}" ]; then
     # Disable default-enabled source
-    sed -i 's/^source =.*/#source =/g' /tmp/snapserver.conf
+    sed -i 's/^source =/#source =/g' /tmp/snapserver.conf
  
     # Add user configuration to snapserver.conf
     SNAPCAST_CONFIG="# user configuration\n${SNAPCAST_CONFIG}"

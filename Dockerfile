@@ -14,6 +14,8 @@ ENTRYPOINT [ "/usr/bin/snapserver" ]
 ###
 FROM snapcast AS snapcast-extended
 
+ENV TZ "Etc/UTC"
+
 ENV PIPE_CONFIG_ENABLED "0"
 ENV PIPE_SOURCE_NAME "Pipe"
 ENV PIPE_PATH "/tmp/snapfifo"
@@ -38,7 +40,7 @@ ENV NGINX_HTTPS_PORT "443"
 # - build shairport sync
 # - build librespot
 # - install nginx
-RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig glib supervisor curl \
+RUN apk add --no-cache dbus alsa-lib libdaemon popt openssl soxr avahi libconfig glib supervisor tzdata curl \
   && mkdir -p /app/build /app/config /app/data \
   #
   # Build shairport-sync with metadata, stdout and pipe support (apk repo is without)
