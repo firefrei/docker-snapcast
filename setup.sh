@@ -13,8 +13,9 @@ dbus-uuidgen --ensure
 SNAPCAST_CONFIG=""
 
 if [ "${PIPE_CONFIG_ENABLED}" -eq 1 ]; then
-    SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = pipe://${PIPE_PATH}?name=${PIPE_SOURCE_NAME}&mode=${PIPE_MODE}\n"
+    SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = pipe://${PIPE_PATH}?name=${PIPE_SOURCE_NAME}&mode=${PIPE_MODE}${PIPE_EXTRA_ARGS}\n"
 fi
+
 if [ "${AIRPLAY_CONFIG_ENABLED}" -eq 1 ]; then
     if [ "${BUILD_AIRPLAY_VERSION}" -eq 2 ]; then
         AIRPLAY_PORT="7000"
@@ -24,15 +25,29 @@ if [ "${AIRPLAY_CONFIG_ENABLED}" -eq 1 ]; then
         echo "[SETUP]  Configuring Snapserver for Airplay 2..."
     fi
 
-    SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = airplay:///shairport-sync?name=${AIRPLAY_SOURCE_NAME}&port=${AIRPLAY_PORT}\n"
+    SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = airplay:///shairport-sync?name=${AIRPLAY_SOURCE_NAME}&port=${AIRPLAY_PORT}${AIRPLAY_EXTRA_ARGS}\n"
 fi
+
 if [ "${SPOTIFY_CONFIG_ENABLED}" -eq 1 ]; then
     if [ -z "${SPOTIFY_USERNAME}" ] || [ -z "${SPOTIFY_PASSWORD}" ]; then
         echo "[SETUP]  Error: Cannot create spotify configuration! Username and/or password are not set!"
     else
-        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&username=${SPOTIFY_USERNAME}&password=${SPOTIFY_PASSWORD}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}\n"
+        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&username=${SPOTIFY_USERNAME}&password=${SPOTIFY_PASSWORD}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}${SPOTIFY_EXTRA_ARGS}\n"
     fi
 fi
+
+if [ "${META_CONFIG_ENABLED}" -eq 1 ]; then
+    if [ -z "${META_SOURCES}" ]; then
+        echo "[SETUP]  Error: Cannot create meta configuration! Sources are not set!"
+    else
+        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = meta:///${META_SOURCES}?name=${META_SOURCE_NAME}${META_EXTRA_ARGS}\n"
+    fi
+fi
+
+if [ ! -z "${SOURCE_CUSTOM}" ]; then
+    SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = ${SOURCE_CUSTOM}\n"
+fi
+
 
 # SNAPCAST: Create configuration file
 cp /etc/snapserver.conf /tmp/snapserver.conf
