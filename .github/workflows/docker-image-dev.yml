@@ -13,7 +13,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/mopidy
+  IMAGE_NAME: ${{ github.repository_owner }}/snapcast
   IMAGE_TAG: dev
 
 jobs:
