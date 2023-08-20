@@ -2,7 +2,7 @@ name: "Check for new versions and update latest release and tag."
 
 on:
   schedule:
-    - cron: '30 1 * * *'
+    - cron: '30 1 1 * *'
   workflow_dispatch:
 
 jobs:
@@ -76,7 +76,7 @@ jobs:
 
   call-workflow-docker-image:
     needs: [check, update]
-    if: ${{ fromJSON(needs.check.outputs.update_info).is_avail }}
+    if: ${{ fromJSON(needs.check.outputs.update_info).is_avail }}
     uses: firefrei/docker-snapcast/.github/workflows/docker-image.yml@main
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

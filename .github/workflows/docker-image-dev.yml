@@ -1,27 +1,20 @@
-name: Publish Docker image
+name: Publish Development Docker image on Github
 
 on:
-  release:
-    types: [published, created]
-  push:
-    tags:
-      - '*'
   # Make workflow callable manually (e.g. via UI)
   workflow_dispatch:
-  # Make workflow callable from other workflows:
-  workflow_call:
-    secrets:
-      DOCKER_USERNAME:
-        required: true
-      DOCKER_ACCESS_TOKEN:
-        required: true
-      DOCKER_PASSWORD:
-        required: true
+  # Create weekly build
+  schedule:
+    - cron: '0 3 * * 6'
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/snapcast/server
-  IMAGE_TAG: latest
+  IMAGE_TAG: dev
 
 jobs:
   build:
@@ -108,39 +101,3 @@ jobs:
       #   # This step uses the identity token to provision an ephemeral certificate
       #   # against the sigstore community Fulcio instance.
       #   run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
-
-  build_dockerhub:
-    name: Build and Push Docker image to Docker Hub (legacy)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: firefrei/snapcast
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Push README to Docker Hub description field
-        uses: peter-evans/dockerhub-description@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: firefrei/snapcast
-          readme-filepath: ./README.md
-          short-description: ${{ github.event.repository.description }}
