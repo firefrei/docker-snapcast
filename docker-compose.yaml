@@ -4,6 +4,26 @@ services:
   snapserver:
     image: 'firefrei/snapcast:latest'
     restart: always
+    environment:
+      # See README.md for all environment options.
+      TZ: Etc/UTC
+    volumes:
+      # Snapcast: Configuration and run-time data
+      - snapcast-data:/app/data/
+      - snapcast-config:/app/config/
+      #- ./config_snapcast/:/app/config/
+
+      # NGINX: HTTPS certificates
+      nginx-certs:/app/certs/
+      #- ./nginx_certs/:/app/certs/
+
+
+    # Network Alternative 1: Bridge container directly into your home network
+    networks:
+      bridged-home-network:
+        #ipv4_address: <desired-ip-of-container>
+
+    # Network Alternative 2: Use port-forwarding of host ports
     ports:
       # Snapcast Ports
       - '1704-1705:1704-1705'
@@ -16,9 +36,15 @@ services:
       - '5353:5353'
       # NGINX ports
       - '443:443'
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./config_snapcast/:/root/.config/snapserver/
 
-      # Optional: HTTPS certificates for NGINX
-      #- ./nginx_certs/:/app/certs/
+
+volumes:
+  snapcast-config:
+  snapcast-data:
+  nginx-certs:
+
+
+# Network Alternative 1
+networks:
+  bridged-home-network:
+    external: true
