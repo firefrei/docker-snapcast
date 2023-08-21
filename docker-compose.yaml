@@ -2,7 +2,7 @@ version: '3'
 
 services:
   snapserver:
-    image: 'firefrei/snapcast:latest'
+    image: 'ghcr.io/firefrei/snapcast/server:latest'
     restart: always
     #cap_add:
       #- NET_BIND_SERVICE   # Optional: allow container to bind privileged ports (>1024)

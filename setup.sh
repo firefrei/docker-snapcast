@@ -22,7 +22,7 @@ if [ "${AIRPLAY_CONFIG_ENABLED}" -eq 1 ]; then
         echo "[SETUP] Configuring Snapserver for Airplay 2..."
     else
         AIRPLAY_PORT="5000"
-        echo "[SETUP]  Configuring Snapserver for Airplay 2..."
+        echo "[SETUP]  Configuring Snapserver for Airplay classic/1..."
     fi
 
     SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = airplay:///shairport-sync?name=${AIRPLAY_SOURCE_NAME}&port=${AIRPLAY_PORT}&devicename=${AIRPLAY_DEVICE_NAME}${AIRPLAY_EXTRA_ARGS}\n"

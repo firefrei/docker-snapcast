@@ -2,7 +2,7 @@
 
 Source on GitHub: [https://github.com/firefrei/docker-snapcast](https://github.com/firefrei/docker-snapcast)  
 Image on GitHub Container Registry: [ghcr.io/firefrei/snapcast/server](https://ghcr.io/firefrei/snapcast/server)  
-Image on Docker Hub (legacy): [firefrei/snapcast](https://hub.docker.com/r/firefrei/snapcast) - please use GitHub Registry!  
+Image on Docker Hub (deprecated): [firefrei/snapcast](https://hub.docker.com/r/firefrei/snapcast) - please use GitHub Container Registry!  
 
 Major image tags:
 - `latest`
@@ -12,15 +12,15 @@ Major image tags:
 
 
 ### In a Nutshell
-[Snapcast](https://github.com/badaix/snapcast) multi-room audio-streaming with AirPlay, Spotify and HTTPS support built-in. Based on Alpine Linux.
+[Snapcast](https://github.com/badaix/snapcast) multi-room audio streaming with AirPlay-1 or -2, Spotify and HTTPS support built-in. Based on Alpine Linux.
 
 ### Long Version
 This docker image serves...
 - [Snapcast](https://github.com/badaix/snapcast) server
-- AirPlay Classic/1 (via [shairport-sync](https://github.com/mikebrady/shairport-sync) with dbus-and avahi-daemon) as snapcast source
+- AirPlay Classic/1 (via [shairport-sync](https://github.com/mikebrady/shairport-sync) with dbus- and avahi-daemon) as snapcast source
 - AirPlay 2 support (see docker image tags with suffix `-airplay2`)
 - Spotify (via [librespot](https://github.com/librespot-org/librespot)) as snapcast source
-- NGINX to provide a HTTPS-secured connection to the Snapweb UI (HTTP-only is directly provided by Snapcast) [optional]
+- NGINX to provide a HTTPS-secured connection to the Snapweb UI/API (HTTP-only is directly provided by Snapcast) [optional]
 - Configuration generator based on environment variables [optional]
 - Supervisord to manage and observe all processes in the container
 - A root-less container environment based on Alpine Linux
@@ -109,22 +109,45 @@ docker run \
   [-p '319-320:319-320/udp'] \
   [-v <your-volume-mounts>] \
   [-e <your-environment-variables>] \
-  firefrei/snapcast
+  ghcr.io/firefrei/snapcast/server:latest
 ```
 
 ### Network Tweaks
-Binding ports numbers below 1024 requires root privileges under linux. As the container runs without root privileges, you need to grant the binding, if required:
+Binding ports numbers below 1024 requires root privileges under Linux. As the container runs without root privileges, you need to grant the binding, if required:
 - Airplay-2 requires NQPTP, which binds the ports `319/udp` and `320/udp`
 - NGINX is (per default) configured to bind to HTTPS port `443/tcp`. This port can also be changed to another number.
 
-Depending on your system and the security you require, you can allow binding to privileged ports by adding the `NET_BIND_SERVICE` linux capability to the container:
+Depending on your system and the security you require, you can allow binding to privileged ports by adding the `NET_BIND_SERVICE` Linux capability to the container:
 ```bash
 docker run ... --cap-add=NET_BIND_SERVICE ...
 ```
 
 If the docker daemon itself is not allowed to bind privileged ports, you may also allow the binding system-wide.
-Grant the privilege for **all** processes(!):
+Grant the privilege for **all**(!) processes:
 ```bash
 sudo sysctl -w net.ipv4.ip_unprivileged_port_start=0
 ```
 Please note that this may affect the security of your complete system.
+
+#### Exposed Container Ports
+Snapcast:
+- 1704-1705
+- 1780
+
+Shairport-Sync:
+- AirPlay classic/1:
+  - 3689
+  - 5000
+  - 5353 (for avahi)
+  - 6000-6009/udp
+- AirPlay-2 ports:
+  - 3689
+  - 5000
+  - 5353 (for avahi)
+  - 6000-6009/udp
+  - 7000
+  - 319-320/udp (for NQPTP)
+- Ref: https://github.com/mikebrady/shairport-sync/blob/master/TROUBLESHOOTING.md#ufw-firewall-blocking-ports-commonly-includes-raspberry-pi
+
+NGINX:
+- 443 or user defined
