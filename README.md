@@ -109,7 +109,7 @@ docker run \
   [-p '319-320:319-320/udp'] \
   [-v <your-volume-mounts>] \
   [-e <your-environment-variables>] \
-  firefrei/snapcast
+  ghcr.io/firefrei/snapcast/server:latest
 ```
 
 ### Network Tweaks
