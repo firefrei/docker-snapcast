@@ -79,9 +79,9 @@ jobs:
           #tags: ${{ steps.meta.outputs.tags }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          no-cache-filters: snapcast
+          #cache-from: type=gha
+          #cache-to: type=gha,mode=max
+          no-cache: true
 
       - name: Build and push Docker image with Airplay-2 support
         id: build-and-push-airplay2
@@ -94,9 +94,9 @@ jobs:
           #tags: ${{ steps.meta.outputs.tags }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-airplay2
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          no-cache-filters: snapcast
+          #cache-from: type=gha
+          #cache-to: type=gha,mode=max
+          no-cache: true
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
