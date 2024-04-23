@@ -4,11 +4,9 @@ FROM alpine:edge AS snapcast
 RUN apk add --no-cache --upgrade snapcast-server \
   # Install latest release of snapweb 
   # (its not shipped with snapcast-server, and not shipped with snapcast since 0.28.0 anymore)
-  && apk add --no-cache --upgrade --virtual .install-deps curl \
-  && curl -L https://github.com/badaix/snapweb/releases/latest/download/snapweb.zip -o /tmp/snapweb.zip \
+  && wget -O /tmp/snapweb.zip https://github.com/badaix/snapweb/releases/latest/download/snapweb.zip \
   && unzip -o /tmp/snapweb.zip -d /usr/share/snapserver/snapweb/ \
-  && rm /tmp/snapweb.zip \
-  && apk del --purge .install-deps
+  && rm /tmp/snapweb.zip
 
 # Expose Ports
 ## Snapcast Ports: 1704-1705 1780
