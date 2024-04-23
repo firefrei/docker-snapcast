@@ -17,6 +17,7 @@ Major image tags:
 ### Long Version
 This docker image serves...
 - [Snapcast](https://github.com/badaix/snapcast) server
+- [Snapweb](https://github.com/badaix/snapweb) web interface for snapcast
 - AirPlay Classic/1 (via [shairport-sync](https://github.com/mikebrady/shairport-sync) with dbus- and avahi-daemon) as snapcast source
 - AirPlay 2 support (see docker image tags with suffix `-airplay2`)
 - Spotify (via [librespot](https://github.com/librespot-org/librespot)) as snapcast source
