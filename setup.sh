@@ -30,7 +30,8 @@ fi
 
 if [ "${SPOTIFY_CONFIG_ENABLED}" -eq 1 ]; then
     if [ -z "${SPOTIFY_USERNAME}" ] || [ -z "${SPOTIFY_PASSWORD}" ]; then
-        echo "[SETUP]  Error: Cannot create spotify configuration! Username and/or password are not set!"
+        echo "[SETUP]  Warning: Spotify username and/or password are not set! Creating config without user account. Spotify Connect client will be discoverable on the local network only."
+        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}${SPOTIFY_EXTRA_ARGS}\n"
     else
         SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&username=${SPOTIFY_USERNAME}&password=${SPOTIFY_PASSWORD}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}${SPOTIFY_EXTRA_ARGS}\n"
     fi
