@@ -56,8 +56,8 @@ AirPlay:
 Spotify:
 - `SPOTIFY_CONFIG_ENABLED`: Enable the generation of a Snapcast `source` for AirPlay in the snapserver configuration file on container startup. Set to `1` to enable, defaults to `0`.
 - `SPOTIFY_SOURCE_NAME`: Source name of Spotify in Snapcast. Defaults to `Spotify`.
-- `SPOTIFY_USERNAME`: (required) Username to login at Spotify API. Defaults to empty string.
-- `SPOTIFY_PASSWORD`: (required) Password to login at Spotify API. Defaults to empty string. Attention: The password is stored in clear-text format in the configuration file!
+- `SPOTIFY_USERNAME`: Username to login at Spotify API. Defaults to empty string.
+- `SPOTIFY_PASSWORD`: Password to login at Spotify API. Defaults to empty string. Attention: The password is stored in clear-text format in the configuration file!
 - `SPOTIFY_DEVICE_NAME`: Speaker name in Spotify app. Defaults to `Snapcast`.
 - `SPOTIFY_BITRATE`: Bitrate to stream from Spotify. Defaults to `320` for high quality.
 - `SPOTIFY_EXTRA_ARGS`: (advanced) Add additional arguments to `source` configuration. Format: `&key=value`.
