@@ -1,8 +1,8 @@
 name: "Check for new versions and update latest release and tag."
 
 on:
-  schedule:
-    - cron: '30 1 1 * *'
+  # schedule:
+  #   - cron: '30 1 1 * *'
   workflow_dispatch:
 
 jobs:

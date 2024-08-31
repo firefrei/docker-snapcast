@@ -1,6 +1,9 @@
 name: Publish Docker image
 
 on:
+  schedule:
+    # Create monthly build
+    - cron: '30 1 1 * *'
   release:
     types: [published, created]
   push:
