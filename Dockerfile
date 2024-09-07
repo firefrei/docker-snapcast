@@ -79,7 +79,7 @@ RUN apk add --no-cache dbus popt openssl soxr avahi libconfig glib \
 FROM snapcast-airport AS snapcast-airport-spotify
 RUN mkdir -p /app/build \
   && cd /app/build \
-  && apk add --no-cache --upgrade --virtual .build-deps git libconfig-dev cargo build-base cmake \
+  && apk add --no-cache --upgrade --virtual .build-deps git libconfig-dev cargo build-base cmake rust-bindgen clang18-dev \
   && git clone https://github.com/librespot-org/librespot.git librespot.git \
   && cd librespot.git \
   && cargo build --release --no-default-features \
