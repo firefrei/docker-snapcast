@@ -32,9 +32,9 @@ Snapcast is loaded from the edge branch of Alpines APK repositories while `shair
 
 Some services may require to bind privileged port numbers (<1024). Check [Network Tweaks](#network-tweaks) section below.
 
-Please note when using Airplay Classic/1: To broadcast the airplay speaker announcements to all client devices, `avahi-daemon` is required and used by shairport-sync. As broadcasts can only work in a layer-2 network domain, the container needs to be attached to the same layer-2 network as the clients (see [docker-compose.yaml](docker-compose.yaml) for an example). As a consequence, in routed layer-3 setups (e.g., Kubernetes), Airplay cannot function out of the box. You may try to workaround this issue by using an MDNS repeater, however, this is not tested and not supported.  
+Please note when using Airplay Classic/1 and/or Spotify: To broadcast the airplay speaker announcements to all client devices, `avahi-daemon` is required and used by shairport-sync. As broadcasts can only work in a layer-2 network domain, the container needs to be attached to the same layer-2 network as the clients (see [docker-compose.yaml](docker-compose.yaml) for an example). As a consequence, in routed layer-3 setups (e.g., Kubernetes), Airplay cannot function out of the box. You may try to workaround this issue by using an MDNS repeater, however, this is not tested and not supported.  
 
-Please note when using Airplay-2: In addition to the requirements for AirPlay Classic/1, Airplay-2 requires NQPTP which needs to bind privileged ports. Check [Network Tweaks](#network-tweaks) section below.
+Please note when using Airplay-2: In addition to the requirements for AirPlay Classic/1 and/or Spotify, Airplay-2 requires NQPTP which needs to bind privileged ports. Check [Network Tweaks](#network-tweaks) section below.
 
 
 ## Container Usage
