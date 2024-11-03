@@ -82,7 +82,7 @@ RUN mkdir -p /app/build \
   && apk add --no-cache --upgrade --virtual .build-deps git libconfig-dev cargo build-base cmake rust-bindgen clang18-dev \
   && git clone https://github.com/librespot-org/librespot.git librespot.git \
   && cd librespot.git \
-  && cargo build --release --no-default-features \
+  && cargo build --release --no-default-features --features with-libmdns\
   && cp ./target/release/librespot /usr/sbin/ \
   && chmod +x /usr/sbin/librespot \
   #
