@@ -29,11 +29,11 @@ if [ "${AIRPLAY_CONFIG_ENABLED}" -eq 1 ]; then
 fi
 
 if [ "${SPOTIFY_CONFIG_ENABLED}" -eq 1 ]; then
-    if [ -z "${SPOTIFY_USERNAME}" ] || [ -z "${SPOTIFY_PASSWORD}" ]; then
-        echo "[SETUP]  Warning: Spotify username and/or password are not set! Creating config without user account. Spotify Connect client will be discoverable on the local network only."
+    if [ -z "${SPOTIFY_ACCESS_TOKEN}" ]; then
+        echo "[SETUP]  Warning: Spotify access token is not set! Creating config without user account. Spotify Connect client will be discoverable on the local network only."
         SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}${SPOTIFY_EXTRA_ARGS}\n"
     else
-        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&username=${SPOTIFY_USERNAME}&password=${SPOTIFY_PASSWORD}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}${SPOTIFY_EXTRA_ARGS}\n"
+        SNAPCAST_CONFIG="${SNAPCAST_CONFIG}source = spotify:///librespot?name=${SPOTIFY_SOURCE_NAME}&access-token=${SPOTIFY_ACCESS_TOKEN}&devicename=${SPOTIFY_DEVICE_NAME}&bitrate=${SPOTIFY_BITRATE}${SPOTIFY_EXTRA_ARGS}\n"
     fi
 fi
 

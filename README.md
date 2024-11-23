@@ -22,7 +22,7 @@ This docker image serves...
 - [Snapweb](https://github.com/badaix/snapweb) web interface for snapcast
 - AirPlay Classic/1 (via [shairport-sync](https://github.com/mikebrady/shairport-sync) with dbus- and avahi-daemon) as snapcast source
 - AirPlay 2 support (see docker image tags with suffix `-airplay2`)
-- Spotify (via [librespot](https://github.com/librespot-org/librespot)) as snapcast source
+- Spotify (via [librespot](https://github.com/librespot-org/librespot) with avahi) as snapcast source
 - NGINX to provide a HTTPS-secured connection to the Snapweb UI/API (HTTP-only is directly provided by Snapcast) [optional]
 - Configuration generator based on environment variables [optional]
 - Supervisord to manage and observe all processes in the container
@@ -58,8 +58,7 @@ AirPlay:
 Spotify:
 - `SPOTIFY_CONFIG_ENABLED`: Enable the generation of a Snapcast `source` for AirPlay in the snapserver configuration file on container startup. Set to `1` to enable, defaults to `0`.
 - `SPOTIFY_SOURCE_NAME`: Source name of Spotify in Snapcast. Defaults to `Spotify`.
-- `SPOTIFY_USERNAME`: (optional) Username to login at Spotify API. Defaults to empty string.
-- `SPOTIFY_PASSWORD`: (optional) Password to login at Spotify API. Defaults to empty string. Attention: The password is stored in clear-text format in the configuration file!
+- `SPOTIFY_ACCESS_TOKEN`: (optional) Access token to login at Spotify API. Defaults to empty string.
 - `SPOTIFY_DEVICE_NAME`: Speaker name in Spotify app. Defaults to `Snapcast`.
 - `SPOTIFY_BITRATE`: Bitrate to stream from Spotify. Defaults to `320` for high quality.
 - `SPOTIFY_EXTRA_ARGS`: (advanced) Add additional arguments to `source` configuration. Format: `&key=value`.
@@ -154,3 +153,13 @@ Shairport-Sync:
 
 NGINX:
 - 443 or user defined
+
+### Spotify Authentication
+Librespot can be used without login at the Spotify API. In this case, the Spotify Speaker is only announced in the local network using Avahi.
+
+To bind the Speaker to your Spotify account, an access token from Spotify is required.
+To get the access token, click on this link and click `Reveal your access token`:
+[https://developer.spotify.com/documentation/web-playback-sdk/tutorials/getting-started](https://developer.spotify.com/documentation/web-playback-sdk/tutorials/getting-started)
+
+In the process, you may need to create an app:
+Top right corner -> *your username* -> dashboard -> create app (make sure to give it `Web SDK` permissions)
