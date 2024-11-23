@@ -87,7 +87,6 @@ if [ "${NGINX_ENABLED}" -eq 1 ]; then
     sed -E -i "s/([[:blank:]]+)(listen[[:blank:]]*)(\[::\]:)(\d\d*)/    listen [::]:${NGINX_HTTPS_PORT}/g" /tmp/default.conf
     cat /tmp/default.conf > /etc/nginx/http.d/default.conf
     rm /tmp/default.conf
-    /usr/sbin/nginx -t
 
     # NGINX: Create supervisord configuration
     NGINX_SUPERVISORD_CONFIG="
