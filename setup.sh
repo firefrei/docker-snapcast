@@ -82,7 +82,9 @@ if [ "${NGINX_ENABLED}" -eq 1 ]; then
 
     # NGINX: Replace port in NGINX config
     # Note: sed cannot directly replace in-file as it cannot create a temporary file under this directory.
-    sed "s/443/${NGINX_HTTPS_PORT}/g" /etc/nginx/http.d/default.conf > /tmp/default.conf
+   
+    sed -E "s/([[:blank:]]+)(listen[[:blank:]]*)(\d\d*)/    listen ${NGINX_HTTPS_PORT}/g" /etc/nginx/http.d/default.conf > /tmp/default.conf
+    sed -E -i "s/([[:blank:]]+)(listen[[:blank:]]*)(\[::\]:)(\d\d*)/    listen [::]:${NGINX_HTTPS_PORT}/g" /tmp/default.conf
     cat /tmp/default.conf > /etc/nginx/http.d/default.conf
     rm /tmp/default.conf
 
