@@ -8,7 +8,7 @@ services:
       #- NET_BIND_SERVICE   # Optional: allow container to bind privileged ports (>1024)
     environment:
       # See README.md for all environment options.
-      TZ: Etc/UTC
+      TZ: "Etc/UTC"
       NGINX_ENABLED: "1"  # enable NGINX for HTTPS -> requires to bind to port 443 by default
       #NGINX_HTTPS_PORT: "4433"  # use port 4433 instead of 4433
     volumes:
@@ -21,31 +21,33 @@ services:
       nginx-certs:/app/certs/
       #- ./nginx_certs/:/app/certs/
 
-
-    # Network Alternative 1: Bridge container directly into your home network
+    # Network Alternative 1: Use host networking
+    network_mode: host
+    
+    # Network Alternative 2: Bridge container directly into your home network
     #networks:
       #bridged-home-network:
         #ipv4_address: <desired-ip-of-container>
 
-    # Network Alternative 2: Use port-forwarding of host ports
-    ports:
-      # Snapcast Ports
-      - '1704-1705:1704-1705'
-      - '1780:1780'
-      # AirPlay ports
-      - '3689:3689'
-      - '5000:5000'
-      - '6000-6009:6000-6009/udp'
-      # AirPlay-2 ports
-      #- '319-320:319-320/udp'
-      #- '3689:3689'
-      #- '5000:5000'
-      #- '7000:7000'
-      #- '6000-6009:6000-6009/udp'
-      # Avahi ports
-      - '5353:5353'
-      # NGINX ports
-      - '443:443'
+    # Network Alternative 3: Use port-forwarding of host ports (experimental, not recommended)
+    # ports:
+    #   # Snapcast Ports
+    #   - '1704-1705:1704-1705'
+    #   - '1780:1780'
+    #   # AirPlay ports
+    #   - '3689:3689'
+    #   - '5000:5000'
+    #   - '6000-6009:6000-6009/udp'
+    #   # AirPlay-2 ports
+    #   #- '319-320:319-320/udp'
+    #   #- '3689:3689'
+    #   #- '5000:5000'
+    #   #- '7000:7000'
+    #   #- '6000-6009:6000-6009/udp'
+    #   # Avahi ports
+    #   - '5353:5353'
+    #   # NGINX ports
+    #   - '443:443'
 
 
 volumes:
@@ -54,7 +56,7 @@ volumes:
   nginx-certs:
 
 
-# Network Alternative 1
+# Network Alternative 2
 # The network `bridged-home-network` must be manually created 
 # with `docker network create ...` and bridged to the home network
 #networks:
