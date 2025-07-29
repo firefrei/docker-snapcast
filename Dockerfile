@@ -91,10 +91,14 @@ RUN mkdir -p /app/build \
   && apk del --purge .build-deps \
   && rm -rf /app/build ~/.cargo
 
+###
+# Build and install alsa 
+FROM snapcast-airport-spotify AS snapcast-alsa
+RUN apk add --no-cache --upgrade alsa-utils alsaconf
 
 ###
 # Create final image
-FROM snapcast-airport-spotify AS snapcast-extended
+FROM snapcast-alsa AS snapcast-extended
 
 ENV TZ "Etc/UTC"
 
