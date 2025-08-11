@@ -9,8 +9,8 @@ RUN apk add --no-cache --upgrade snapcast-server \
   && rm /tmp/snapweb.zip
 
 # Expose Ports
-## Snapcast Ports: 1704-1705 1780
-EXPOSE 1704-1705 1780
+## Snapcast Ports: 1704-1705 1780 1788
+EXPOSE 1704-1705 1780 1788
 
 ENTRYPOINT [ "/usr/bin/snapserver" ]
 
@@ -123,30 +123,25 @@ ENV META_EXTRA_ARGS=""
 
 ENV SOURCE_CUSTOM=""
 
-ENV NGINX_ENABLED="0"
-ENV NGINX_SKIP_CERT_GENERATION="0"
-ENV NGINX_HTTPS_PORT="443"
+ENV HTTPS_ENABLED="1"
+ENV SKIP_CERT_GENERATION="0"
+ENV CERT_SERVER_CN="snapserver"
+ENV CERT_SERVER_DNS="snapserver snapserver.local"
 
 
 # Install and build steps
 # - install shairport-sync runtime dependencies
 # - build shairport sync
 # - build librespot
-# - install nginx
-RUN apk add --no-cache --upgrade supervisor tzdata curl \
+RUN apk add --no-cache --upgrade supervisor tzdata curl bash \
   && mkdir -p /app/config /app/data /app/certs/ \
   #
-  # Install NGINX for SSL reverse proxy to webinterface
-  && apk add --no-cache --upgrade nginx \
-  && mkdir -p /run/nginx/  \
-  && chown -R snapcast:snapcast /var/lib/nginx /var/log /usr/lib/nginx /run/nginx /app/certs \
-  #
   # Create configuration and environment for supervisord
-  && mkdir -p /app/supervisord /run/supervisord \
+  && mkdir -p /app/supervisord /run/supervisord /var/log/supervisord \
   && cp /etc/supervisord.conf /app/supervisord/supervisord.conf \
   && sed -i 's/^files =.*/files = \/app\/supervisord\/*.ini/g' /app/supervisord/supervisord.conf \
   && sed -i 's/\/run\/supervisord.sock/\/run\/supervisord\/supervisord.sock/g' /app/supervisord/supervisord.conf \
-  && chown -R snapcast:snapcast /run/supervisord /app/supervisord \
+  && chown -R snapcast:snapcast /run/supervisord /app/supervisord /var/log/supervisord \
   #
   # Configure app directory owner
   && chown -R snapcast:snapcast /app
@@ -154,11 +149,9 @@ RUN apk add --no-cache --upgrade supervisor tzdata curl \
 # Add supervisord configuration
 ADD --chown=snapcast:snapcast config/supervisord/supervisord.ini /app/supervisord/snapcast.ini
 
-# Add NGINX configuration
-ADD --chown=snapcast:snapcast config/nginx/default.conf /etc/nginx/http.d/default.conf
-
 # Copy setup and healtcheck script
 ADD --chown=snapcast:snapcast --chmod=0775 setup.sh /app/setup.sh
+ADD --chown=snapcast:snapcast --chmod=0775 create-certs.sh /app/create-certs.sh
 ADD --chown=snapcast:snapcast --chmod=0775 healthcheck.sh /app/healthcheck.sh
 
 USER snapcast:snapcast
@@ -168,14 +161,13 @@ VOLUME [ "/app/config", "/app/data", "/app/certs" ]
 HEALTHCHECK CMD [ "/bin/sh", "/app/healthcheck.sh" ]
 
 # Expose Ports
-## Snapcast Ports:   1704-1705 1780
+## Snapcast Ports:   1704-1705 1780 1788
 ## Shairport-Sync:
 ### Ref: https://github.com/mikebrady/shairport-sync/blob/master/TROUBLESHOOTING.md#ufw-firewall-blocking-ports-commonly-includes-raspberry-pi
 ### AirPlay ports:    3689/tcp 5000/tcp 6000-6009/udp
 ### AirPlay-2 ports:  3689/tcp 5000/tcp 6000-6009/udp 7000/tcp for airplay, 319-320/udp for NQPTP
 ### Avahi ports:      5353
-## NGINX ports:      443 or user defined
-EXPOSE 1704-1705 1780 3689 5000 6000-6009/udp 7000 319-320/udp 5353 "${NGINX_HTTPS_PORT}"
+EXPOSE 1704-1705 1780 1788 3689 5000 6000-6009/udp 7000 319-320/udp 5353
 
 # Run start script
 ENTRYPOINT [ "/bin/sh", "-c" ]

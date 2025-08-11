@@ -12,6 +12,8 @@ Major image tags:
 
 `latest` tags are built monthly (and on-demand). `dev` tags are built weekly (and on-demand), and may contain unstable code and tests.
 
+### BREAKING CHANGES
+- 2025-08-11: Removal of NGINX. Snapserver has now built-in HTTPS support via port 1788 (now enabled by default).
 
 ### In a Nutshell
 [Snapcast](https://github.com/badaix/snapcast) multi-room audio streaming with AirPlay-1 or -2, Spotify and HTTPS support built-in. Based on Alpine Linux.
@@ -23,7 +25,7 @@ This docker image serves...
 - AirPlay Classic/1 (via [shairport-sync](https://github.com/mikebrady/shairport-sync) with dbus- and avahi-daemon) as snapcast source
 - AirPlay 2 support (see docker image tags with suffix `-airplay2`)
 - Spotify (via [librespot](https://github.com/librespot-org/librespot) with avahi) as snapcast source
-- NGINX to provide a HTTPS-secured connection to the Snapweb UI/API (HTTP-only is directly provided by Snapcast) [optional]
+- Certificate generation to provide a HTTPS-secured connection to Snapcast and Snapweb UI/API
 - Configuration generator based on environment variables [optional]
 - Supervisord to manage and observe all processes in the container
 - A root-less container environment based on Alpine Linux
@@ -72,10 +74,11 @@ Meta:
 Custom:
 - `SOURCE_CUSTOM`: (advanced) Additional custom source to add to the Snapcast `source` configuration. Defaults to empty string. Format example: `file:///<path/to/PCM/file>?name=<name>`.
 
-NGINX:
-- `NGINX_ENABLED`: Set to `1` to enable NGINX reverse proxy for serving HTTPS. Defaults to `0`.
-- `NGINX_SKIP_CERT_GENERATION`: Set to `1` to disable certificate generation on startup (if not existant). Defaults to `0`.
-- `NGINX_HTTPS_PORT`: HTTPS port NGINX will bind to. Defaults to `443`, which will only work if docker can bind this port. If having trouble, try a port number above 1024 or adjust the privileges of the container.
+HTTPS:
+- `HTTPS_ENABLED`: Set to `0` to disable basic HTTPS configuration generation. Defaults to `1`.
+- `SKIP_CERT_GENERATION`: Set to `1` to disable certificate generation on startup (if not existant). Defaults to `0`.
+- `CERT_SERVER_CN`: Set common name (CN) of server certificate (if certficate generation is enabled). Defaults to `snapserver`.
+- `CERT_SERVER_DNS`: Set DNS names included in server certificate as space-separated list (if certficate generation is enabled). Defaults to `snapserver snapserver.local`.
 
 General:
 - `TZ`: Your system time zone (for logging, etc.). Defaults to `Etc/UTC`.
@@ -88,8 +91,8 @@ General:
 - `/app/data/`  
   Snapserver is going to place its run-time configuration (like `server.json`) here.
 - `/app/certs/`  
-  NGINX is configured as a reverse proxy to serve a HTTPS-secured connection to Snapweb. This folder must contain the TLS certificate files: `snapserver.pem` contains the certificate (chain) and `snapserver.key` the private key file.
-  If volume is not mounted or the mentioned files do not exist, self-signed certificates are created and stored under this location.
+  This folder must contain the TLS certificate files: `snapserver.crt` contains the certificate (chain) and `snapserver.key` the private key file.
+  If volume is *not* mounted or the mentioned files do not exist, a self-signed certificate authority (CA) and certicates are created and stored under this location.
 
 
 ## Container Setup
@@ -102,11 +105,11 @@ Run container with:
 docker run \
   -p '1704-1705:1704-1705' \
   -p '1780:1780' \
+  -p '1788:1788' \
   -p '3689:3689' \
   -p '5000:5000' \
   -p '6000-6009:6000-6009/udp' \
   -p '5353:5353' \
-  -p '443:443' \
   [-p '7000:7000'] \
   [-p '319-320:319-320/udp'] \
   [-v <your-volume-mounts>] \
@@ -117,7 +120,6 @@ docker run \
 ### Network Tweaks
 Binding ports numbers below 1024 requires root privileges under Linux. As the container runs without root privileges, you need to grant the binding, if required:
 - Airplay-2 requires NQPTP, which binds the ports `319/udp` and `320/udp`
-- NGINX is (per default) configured to bind to HTTPS port `443/tcp`. This port can also be changed to another number.
 
 Depending on your system and the security you require, you can allow binding to privileged ports by adding the `NET_BIND_SERVICE` Linux capability to the container:
 ```bash
@@ -135,6 +137,7 @@ Please note that this may affect the security of your complete system.
 Snapcast:
 - 1704-1705
 - 1780
+- 1788
 
 Shairport-Sync:
 - AirPlay classic/1:
@@ -151,8 +154,6 @@ Shairport-Sync:
   - 319-320/udp (for NQPTP)
 - Ref: https://github.com/mikebrady/shairport-sync/blob/master/TROUBLESHOOTING.md#ufw-firewall-blocking-ports-commonly-includes-raspberry-pi
 
-NGINX:
-- 443 or user defined
 
 ### Spotify Authentication
 Librespot can be used without login at the Spotify API. In this case, the Spotify Speaker is only announced in the local network using Avahi.

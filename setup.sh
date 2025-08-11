@@ -61,45 +61,26 @@ if [ ! -z "${SNAPCAST_CONFIG}" ]; then
     sed -i "/^\[stream\].*/a ${SNAPCAST_CONFIG}" /tmp/snapserver.conf
 fi
 
+
+#
+# SETUP HTTPS
+#
+if [ "${HTTPS_ENABLED}" -eq 1 ]; then
+    # Generate CA and certificates
+    if [ "${SKIP_CERT_GENERATION}" -eq 0 ]; then
+        /bin/bash /app/create-certs.sh
+    fi
+
+    # Enable HTTPS in configuration
+    sed -i 's|^#\?ssl_enabled =.*|ssl_enabled = true|' /tmp/snapserver.conf
+    sed -i 's|^#\?certificate =.*|certificate = /app/certs/snapserver.crt|' /tmp/snapserver.conf
+    sed -i 's|^#\?certificate_key =.*|certificate_key = /app/certs/snapserver.key|' /tmp/snapserver.conf
+fi
+
 # Copy created configuration to config directoy, if not existant yet
 cp -n /tmp/snapserver.conf /app/config/snapserver.conf
 rm /tmp/snapserver.conf
 
-
-#
-# SETUP NGINX
-#
-if [ "${NGINX_ENABLED}" -eq 1 ]; then
-    # NGINX: generate self-signed ssl certificates, if no certs are existant
-    if [ -s /app/certs/snapserver.pem ] || [ -s /app/certs/snapserver.key ] || [ "${NGINX_SKIP_CERT_GENERATION}" -eq 1 ]; then
-        echo "[SETUP] Server SSL certificates for NGINX already exist, skipping generation."
-    else
-        echo "[SETUP] Generating self-signed certificates for NGINX..."
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -keyout /app/certs/snapserver.key -out /app/certs/snapserver.pem \
-            -subj "/C=DE/ST=Bavaria/L=Nuremberg/O=Snapserver/CN=snapserver"
-    fi
-
-    # NGINX: Replace port in NGINX config
-    # Note: sed cannot directly replace in-file as it cannot create a temporary file under this directory.
-   
-    sed -E "s/([[:blank:]]+)(listen[[:blank:]]*)(\d\d*)/    listen ${NGINX_HTTPS_PORT}/g" /etc/nginx/http.d/default.conf > /tmp/default.conf
-    sed -E -i "s/([[:blank:]]+)(listen[[:blank:]]*)(\[::\]:)(\d\d*)/    listen [::]:${NGINX_HTTPS_PORT}/g" /tmp/default.conf
-    cat /tmp/default.conf > /etc/nginx/http.d/default.conf
-    rm /tmp/default.conf
-
-    # NGINX: Create supervisord configuration
-    NGINX_SUPERVISORD_CONFIG="
-    [program:nginx]\n
-    command=/usr/sbin/nginx -g 'daemon off;'\n
-    autostart=true\n
-    autorestart=true\n
-    startsecs=3\n
-    startretries=5\n
-    priority=40\n
-    "
-    echo -e "${NGINX_SUPERVISORD_CONFIG}" > /app/supervisord/nginx.ini
-fi
 
 
 #
