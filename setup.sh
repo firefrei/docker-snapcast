@@ -68,7 +68,7 @@ fi
 if [ "${HTTPS_ENABLED}" -eq 1 ]; then
     # Generate CA and certificates
     if [ "${SKIP_CERT_GENERATION}" -eq 0 ]; then
-        /bin/bash /app/create-certs.sh
+        /bin/bash /app/gen-certs.sh
     fi
 
     # Enable HTTPS in configuration

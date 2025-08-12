@@ -152,7 +152,7 @@ RUN apk add --no-cache --upgrade supervisor tzdata curl bash \
 ADD --chown=snapcast:snapcast config/supervisord/supervisord.ini /app/supervisord/snapcast.ini
 
 # Copy setup and healtcheck script
-ADD --chown=snapcast:snapcast --chmod=0775 setup.sh create-certs.sh healthcheck.sh /app/
+ADD --chown=snapcast:snapcast --chmod=0775 setup.sh gen-certs.sh healthcheck.sh /app/
 
 USER snapcast:snapcast
 WORKDIR /app
