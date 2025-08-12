@@ -6,7 +6,10 @@ RUN apk add --no-cache --upgrade snapcast-server \
   # (its not shipped with snapcast-server, and not shipped with snapcast since 0.28.0 anymore)
   && wget -O /tmp/snapweb.zip https://github.com/badaix/snapweb/releases/latest/download/snapweb.zip \
   && unzip -o /tmp/snapweb.zip -d /usr/share/snapserver/snapweb/ \
-  && rm /tmp/snapweb.zip
+  && rm /tmp/snapweb.zip \
+  # Install dependencies for snapserver metadata scripts
+  # (located in https://github.com/badaix/snapcast/blob/develop/server/etc/plug-ins/meta_mopidy.py and meta_mpd.py)
+  && apk add --no-cache --upgrade py3-websocket-client py3-mpd2 py3-musicbrainzngs py3-gobject3 py3-dbus py3-requests
 
 # Expose Ports
 ## Snapcast Ports: 1704-1705 1780 1788
@@ -129,10 +132,9 @@ ENV CERT_SERVER_CN="snapserver"
 ENV CERT_SERVER_DNS="snapserver snapserver.local"
 
 
-# Install and build steps
-# - install shairport-sync runtime dependencies
-# - build shairport sync
-# - build librespot
+# Install steps
+# - install and configure supervisord
+# - copy runtime scripts
 RUN apk add --no-cache --upgrade supervisor tzdata curl bash \
   && mkdir -p /app/config /app/data /app/certs/ \
   #
@@ -150,9 +152,7 @@ RUN apk add --no-cache --upgrade supervisor tzdata curl bash \
 ADD --chown=snapcast:snapcast config/supervisord/supervisord.ini /app/supervisord/snapcast.ini
 
 # Copy setup and healtcheck script
-ADD --chown=snapcast:snapcast --chmod=0775 setup.sh /app/setup.sh
-ADD --chown=snapcast:snapcast --chmod=0775 create-certs.sh /app/create-certs.sh
-ADD --chown=snapcast:snapcast --chmod=0775 healthcheck.sh /app/healthcheck.sh
+ADD --chown=snapcast:snapcast --chmod=0775 setup.sh create-certs.sh healthcheck.sh /app/
 
 USER snapcast:snapcast
 WORKDIR /app
