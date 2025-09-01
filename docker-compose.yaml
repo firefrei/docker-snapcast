@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   snapserver:
     image: 'ghcr.io/firefrei/snapcast/server:latest'
