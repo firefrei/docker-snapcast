@@ -81,12 +81,12 @@ RUN apk add --no-cache dbus popt openssl soxr avahi libconfig glib \
 # - Disable all audio out plugins, as they are not needed.
 FROM snapcast-airport AS snapcast-airport-spotify
 ARG LIBRESPOT_BRANCH
-ENV BUILD_LIBRESPOT_BRANCH="${LIBRESPOT_TAG:-master}"
+ENV BUILD_LIBRESPOT_BRANCH="${LIBRESPOT_BRANCH:-master}"
 
 RUN mkdir -p /app/build \
   && cd /app/build \
   && apk add --no-cache --upgrade --virtual .build-deps git libconfig-dev cargo build-base cmake rust-bindgen clang18-dev openssl-dev \
-  && git clone -b ${BUILD_LIBRESPOT_TAG} https://github.com/librespot-org/librespot.git librespot.git \
+  && git clone -b ${BUILD_LIBRESPOT_BRANCH} https://github.com/librespot-org/librespot.git librespot.git \
   && cd librespot.git \
   && cargo build --release --no-default-features --features "native-tls with-avahi" \
   && cp ./target/release/librespot /usr/sbin/ \
