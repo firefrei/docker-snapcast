@@ -30,7 +30,7 @@ This docker image serves...
 - Supervisord to manage and observe all processes in the container
 - A root-less container environment based on Alpine Linux
 
-Snapcast is loaded from the edge branch of Alpines APK repositories while `shairport-sync` and `librespot` are built manually with recommended options by Snapcast. 
+Snapcast is loaded from the edge branch of Alpines APK repositories while `shairport-sync` and `librespot` (`dev` branch) are built manually with recommended options by Snapcast. 
 
 Some services may require to bind privileged port numbers (<1024). Check [Network Tweaks](#network-tweaks) section below.
 

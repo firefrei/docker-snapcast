@@ -68,8 +68,6 @@ jobs:
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
           context: .
-          build-args: |
-            LIBRESPOT_BRANCH=dev
           push: ${{ github.event_name != 'pull_request' }}
           #tags: ${{ steps.meta.outputs.tags }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
@@ -84,7 +82,6 @@ jobs:
         with:
           context: .
           build-args: |
-            LIBRESPOT_BRANCH=dev
             AIRPLAY_VERSION=2
           push: ${{ github.event_name != 'pull_request' }}
           #tags: ${{ steps.meta.outputs.tags }}
