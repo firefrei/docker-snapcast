@@ -1,5 +1,12 @@
 FROM alpine:edge AS snapcast
 
+ARG UID=1000
+ARG GID=1000
+
+# manually add user to map ids to host's file system
+RUN addgroup -g "${GID}" -S snapcast
+RUN adduser -u "${UID}" -D -G snapcast -h '/var/lib/snapserver' -H snapcast
+
 # Install snapcast-server and snapweb
 RUN apk add --no-cache --upgrade snapcast-server \
   # Install latest release of snapweb 
