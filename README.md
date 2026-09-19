@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> **This project is archived and no longer maintained.**
+>
+> I’ve moved my personal setup to [Music Assistant](https://music-assistant.io/) and [Sendspin](https://sendspin-audio.com/), so I’m no longer actively using, developing or maintaining this project.
+
 # Snapcast Container
 
 Source on GitHub: [https://github.com/firefrei/docker-snapcast](https://github.com/firefrei/docker-snapcast)  
